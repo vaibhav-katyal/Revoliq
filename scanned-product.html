@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanned Products</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #00325a;
+            --secondary: #fa9600;
+            --background: #fafafa;
+            --text: #2c3e50;
+            --border: #e0e0e0;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            background: var(--primary);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            color: var(--white);
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .cart-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--secondary);
+            color: var(--white);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .cart-page h1 {
+            margin-bottom: 2rem;
+            color: var(--primary);
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .scan-more-card {
+            background: linear-gradient(135deg, var(--primary), #004880);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .scan-more-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .scan-more-content {
+            flex: 1;
+        }
+
+        .scan-more-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .scan-more-content p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .scan-more-btn {
+            background: var(--secondary);
+            color: var(--white);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .scan-more-btn:hover {
+            background: #ff9f00;
+            transform: scale(1.05);
+        }
+
+        .cart-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        .cart-item {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .cart-item:hover {
+            transform: translateX(5px);
+        }
+
+        .cart-item-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .cart-item-price {
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .quantity-btn {
+            background: var(--background);
+            border: 2px solid var(--border);
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        .quantity-btn i {
+            font-size: 0.9rem;
+        }
+
+        .remove-item {
+            color: #e74c3c;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .remove-item:hover {
+            background: #fee;
+            transform: scale(1.1);
+        }
+
+        .cart-sidebar {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.1rem;
+        }
+
+        .total-row {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--primary);
+            border-bottom: none;
+            margin-top: 1rem;
+        }
+
+        .checkout-btn {
+            background: var(--secondary);
+            color: var(--white);
+            border: none;
+            padding: 1.2rem;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background: #ff9f00;
+            transform: scale(1.02);
+        }
+
+        .empty-cart {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .empty-cart i {
+            font-size: 5rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-cart h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-cart p {
+            color: var(--text);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .empty-cart .checkout-btn {
+            max-width: 250px;
+            margin: 0 auto;
+        }
+
+        footer {
+            background: var(--primary);
+            color: var(--white);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-logo h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--white);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .cart-container {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-sidebar {
+                position: static;
+                margin-top: 2rem;
+            }
+
+            .scan-more-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+
+            .cart-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .cart-item-quantity {
+                justify-content: center;
+            }
+
+            .remove-item {
+                margin-top: 1rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="logo">
+                <h1>Revoliq</h1>
+            </div>
+            <div class="nav-links">
+                <a href="QR.html">
+                    <i class="fas fa-qrcode"></i>
+                    Scan Products
+                </a>
+                <a href="scanned-product.html" class="cart-link active">
+                    <i class="fas fa-shopping-cart"></i>
+                    Cart
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="cart-page">
+            <h1>Scanned Products</h1>
+            
+            <div class="scan-more-card">
+                <div class="scan-more-content">
+                    <h2>Want to add more items?</h2>
+                    <p>Scan more products to add them to your cart</p>
+                </div>
+                <button class="scan-more-btn" onclick="scanMore()">
+                    <i class="fas fa-qrcode"></i>
+                    Scan Products
+                </button>
+            </div>
+
+            <div class="cart-container">
+                <div class="cart-items" id="productList">
+                    <!-- Cart items will be inserted here -->
+                </div>
+                <div class="cart-sidebar">
+                    <div class="cart-summary">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">₹0.00</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span>Total:</span>
+                            <span id="totalPrice">₹0.00</span>
+                        </div>
+                    </div>
+                    <button class="checkout-btn" onclick="checkout()">
+                        Proceed to Checkout
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2>Revoliq</h2>
+                <p>Smart Shopping, Smarter Living</p>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <a href="QR.html">Scan Products</a>
+                <a href="scanned-product.html">Cart</a>
+            </div>
+            <div class="footer-links">
+                <h3>Help & Support</h3>
+                <a href="#">How It Works</a>
+                <a href="#">Contact Us</a>
+                <a href="#">FAQs</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Revoliq. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function fetchProducts() {
+            fetch('http://localhost:5000/products')
+            .then(response => response.json())
+            .then(data => {
+                let productList = document.getElementById("productList");
+                let totalPrice = 0;
+                productList.innerHTML = "";
+
+                data.forEach(product => {
+                    const unitPrice = product.price / product.quantity;
+                    let total = product.quantity * unitPrice;
+                    totalPrice += total;
+
+                    productList.innerHTML += `
+                        <div class="cart-item">
+                            <img src="path/to/image.jpg" alt="${product.name}" class="cart-item-image">
+                            <div class="cart-item-info">
+                                <h3 class="cart-item-name">${product.name}</h3>
+                                <p class="cart-item-price">₹${unitPrice.toFixed(2)}</p>
+                                <div class="cart-item-quantity">
+                                    <button class="quantity-btn" onclick="updateQuantity('${product._id}', ${product.quantity - 1}, ${unitPrice})">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span>${product.quantity}</span>
+                                    <button class="quantity-btn" onclick="updateQuantity('${product._id}', ${product.quantity + 1}, ${unitPrice})">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <span class="remove-item" onclick="removeFromCart('${product._id}')">
+                                <i class="fas fa-trash"></i>
+                            </span>
+                        </div>
+                    `;
+                });
+
+                const total = totalPrice;
+
+                document.getElementById("subtotal").innerText = `₹${totalPrice.toFixed(2)}`;
+                document.getElementById("totalPrice").innerText = `₹${total.toFixed(2)}`;
+            });
+        }
+
+        function scanMore() {
+            window.location.href = "QR.html";
+        }
+
+        function checkout() {
+            alert('Thank you for your purchase!');
+            // Additional checkout logic can be added here
+        }
+
+        function updateQuantity(id, quantity, unitPrice) {
+            if (quantity < 1) {
+                removeFromCart(id);
+                return;
+            }
+            const updatedPrice = unitPrice * quantity;
+            fetch(`http://localhost:5000/products/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quantity, price: updatedPrice })
+            }).then(fetchProducts);
+        }
+
+        function removeFromCart(id) {
+            fetch(`http://localhost:5000/products/${id}`, {
+                method: 'DELETE'
+            }).then(fetchProducts);
+        }
+
+        fetchProducts();
+    </script>
+</body>
+</html>
+

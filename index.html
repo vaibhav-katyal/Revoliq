@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Revoliq SmartCart</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="logo">
+                <h1>Revoliq</h1>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="active">Products</a>
+                <a href="/cart.html" class="cart-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="hero">
+            <h1>Welcome to Revoliq SmartCart</h1>
+            <p>Discover our premium collection of smart devices</p>
+        </div>
+        
+        <div class="products-container" id="productsContainer"></div>
+    </main>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2>Revoliq</h2>
+                <p>Smart Shopping, Smarter Living</p>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <a href="/">Home</a>
+                <a href="/cart.html">Cart</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Revoliq. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>

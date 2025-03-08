@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retailer Dashboard - Revoliq SmartCart</title>
+    <link rel="stylesheet" href="ret_dash.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Revoliq</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3>Main Menu</h3>
+                    <a href="ret_dash.html" class="nav-item active" data-page="dashboard">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="products">
+                        <i class="fas fa-box"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="orders">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="customers">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <h3>Reports</h3>
+                    <a href="#" class="nav-item" data-page="sales">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Sales Analytics</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="inventory">
+                        <i class="fas fa-boxes"></i>
+                        <span>Inventory</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(0, 50, 90, 0.1)">
+                            <i class="fas fa-rupee-sign" style="color: var(--primary)"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Today's Revenue</h3>
+                            <p class="stat-value">₹0.00</p>
+                            <span class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                Loading...
+                            </span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(250, 150, 0, 0.1)">
+                            <i class="fas fa-shopping-bag" style="color: var(--accent)"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Orders</h3>
+                            <p class="stat-value">0</p>
+                            <span class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                Loading...
+                            </span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1)">
+                            <i class="fas fa-users" style="color: #22c55e"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>New Customers</h3>
+                            <p class="stat-value">0</p>
+                            <span class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                Loading...
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Revenue Overview</h3>
+                            <div class="chart-actions">
+                                <button class="active">Weekly</button>
+                                <button>Monthly</button>
+                                <button>Yearly</button>
+                            </div>
+                        </div>
+                        <div style="height: 300px; position: relative;">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Product Categories</h3>
+                        </div>
+                        <div style="height: 300px; position: relative;">
+                            <canvas id="satisfactionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="transactions-card">
+                    <div class="card-header">
+                        <h3>Recent Orders</h3>
+                        <button class="export-btn">
+                            <i class="fas fa-download"></i>
+                            Export Report
+                        </button>
+                    </div>
+                    <div class="transactions-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Product</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Orders will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="ret_dash.js"></script>
+</body>
+</html>
