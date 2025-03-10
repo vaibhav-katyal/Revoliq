@@ -263,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         alert("Login Successful!")
         // Redirect based on user type
-        window.location.href = userType === "retailer" ? "retailer_dashboard.html" : "customer_dashboard.html"
+        window.location.href = userType === "retailer" ? "/Revoliq/ret_dash.html" : "customer_dashboard.html"
       } catch (error) {
         console.error("Error during sign in:", error.code, error.message)
         alert(`Login failed: ${error.message}`)
