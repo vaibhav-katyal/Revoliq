@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revoliq - Smart Shopping Experience</title>
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container sign-up-container">
+            <form id="signUpForm">
+                <div class="logo-container">
+                    <div class="logo">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Revoliq</span>
+                    </div>
+                    <h2>Create Account</h2>
+                </div>
+                
+                <div class="user-type-selector">
+                    <div class="user-type-option" data-type="customer">
+                        <i class="fas fa-user"></i>
+                        <span>Customer</span>
+                    </div>
+                    <div class="user-type-option" data-type="retailer">
+                        <i class="fas fa-store"></i>
+                        <span>Retailer</span>
+                    </div>
+                </div>
+                <input type="hidden" id="signUpUserType" value="customer">
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-user"></i>
+                        <input type="text" placeholder="Full Name" id="signUpName" required />
+                    </div>
+                    <span class="error-message" id="nameError"></span>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" placeholder="Email Address" id="signUpEmail" required />
+                    </div>
+                    <span class="error-message" id="emailError"></span>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" placeholder="Password" id="signUpPassword" required />
+                        <i class="fas fa-eye-slash toggle-password"></i>
+                    </div>
+                    <span class="error-message" id="signUpPasswordError"></span>
+
+                </div>
+                
+                <div class="input-group" id="retailerFields" style="display: none;">
+                    <div class="input-container">
+                        <i class="fas fa-building"></i>
+                        <input type="text" placeholder="Store Name" id="storeName" />
+                    </div>
+                    <span class="error-message" id="storeNameError"></span>
+                </div>
+                
+                <div class="terms">
+                    <label>
+                        <input type="checkbox" id="termsCheckbox" required />
+                        <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="primary-button">Create Account</button>
+            </form>
+        </div>
+        
+        <div class="form-container sign-in-container">
+            <form id="signInForm">
+                <div class="logo-container">
+                    <div class="logo">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Revoliq</span>
+                    </div>
+                    <h2>Sign In</h2>
+                </div>
+                
+                <div class="user-type-selector">
+                    <div class="user-type-option active" data-type="customer">
+                        <i class="fas fa-user"></i>
+                        <span>Customer</span>
+                    </div>
+                    <div class="user-type-option" data-type="retailer">
+                        <i class="fas fa-store"></i>
+                        <span>Retailer</span>
+                    </div>
+                </div>
+                <input type="hidden" id="signInUserType" value="customer">
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" placeholder="Email Address" id="signInEmail" required />
+                    </div>
+                    <span class="error-message" id="signInEmailError"></span>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" placeholder="Password" id="signInPassword" required />
+                        <i class="fas fa-eye-slash toggle-password"></i>
+                    </div>
+                    <span class="error-message" id="signInPasswordError"></span>
+                </div>
+                
+                <div class="remember-forgot">
+                    <label>
+                        <input type="checkbox" id="rememberMe" />
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="primary-button">Sign In</button>
+            </form>
+        </div>
+        
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Sign in to access your Revoliq account and continue your seamless shopping experience</p>
+                    <button class="ghost-button" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Join Revoliq and experience the future of shopping with our smart cart technology</p>
+                    <button class="ghost-button" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="firebase-auth.js"></script>
+    <script type="module" src="login.js"></script>
+    <script>
+        // Add this to check if scripts are loading properly
+        console.log('HTML document loaded');
+        
+        // Check if the form exists
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+            console.log('Sign Up Form exists:', !!document.getElementById('signUpForm'));
+            console.log('Sign In Form exists:', !!document.getElementById('signInForm'));
+            
+            // Add a manual test function
+            window.testFirebase = function() {
+                console.log('Testing Firebase connection...');
+                const event = new Event('submit');
+                const form = document.getElementById('signUpForm');
+                
+                // Fill in test data
+                document.getElementById('signUpName').value = 'Test User';
+                document.getElementById('signUpEmail').value = 'test' + Math.floor(Math.random() * 10000) + '@example.com';
+                document.getElementById('signUpPassword').value = 'password123';
+                document.getElementById('termsCheckbox').checked = true;
+                
+                // Dispatch the event
+                if (form) {
+                    form.dispatchEvent(event);
+                    console.log('Test form submitted');
+                } else {
+                    console.error('Form not found');
+                }
+            };
+            
+            console.log('You can test Firebase by running testFirebase() in the console');
+        });
+    </script>
+</body>
+</html>
