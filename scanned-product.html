@@ -511,7 +511,7 @@
 
                     productList.innerHTML += `
                         <div class="cart-item">
-                            <img src="path/to/image.jpg" alt="${product.name}" class="cart-item-image">
+                            <img src="${product.image || 'https://via.placeholder.com/300'}" alt="${product.name}" class="cart-item-image">
                             <div class="cart-item-info">
                                 <h3 class="cart-item-name">${product.name}</h3>
                                 <p class="cart-item-price">₹${unitPrice.toFixed(2)}</p>

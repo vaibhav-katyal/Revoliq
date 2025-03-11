@@ -67,9 +67,8 @@ app.post('/scan', async (req, res) => {
         let product = await Product.findOne({ id: barcode });
         
         if (product) {
-            // Update existing product
+            // Update existing product quantity
             product.quantity += 1;
-            product.price += addedProduct.price;
         } else {
             // Create new product
             product = new Product({
