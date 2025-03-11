@@ -5,7 +5,7 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));  // Increased limit for base64 images
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log("MongoDB Connected"))
   .catch(err => console.error(err));
 
-// Product Schema
+// Product Schema (existing)
 const productSchema = new mongoose.Schema({
     id: String,
     name: String,
@@ -25,28 +25,70 @@ const productSchema = new mongoose.Schema({
 });
 const Product = mongoose.model('Product', productSchema);
 
-// API to store scanned product
-app.post('/scan', async (req, res) => {
+// Added Products Schema (new)
+const addedProductSchema = new mongoose.Schema({
+    name: String,
+    price: Number,
+    image: String,
+    barcode: String,
+    createdAt: { type: Date, default: Date.now }
+});
+const AddedProduct = mongoose.model('Added_Pdts', addedProductSchema);
+
+// Find product by barcode
+app.get('/products/find/:barcode', async (req, res) => {
     try {
-        const { id, name, price, image, scannedAt } = req.body;
-        if (!id || !name || !price || !image) return res.status(400).json({ message: "Product ID, name, price, and image are required" });
-
-        let product = await Product.findOne({ id });
-        if (product) {
-            product.quantity += 1;
-            product.price += price;
-        } else {
-            product = new Product({ id, name, price, image, scannedAt });
+        const { barcode } = req.params;
+        const product = await AddedProduct.findOne({ barcode });
+        
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
         }
-        await product.save();
-
-        res.status(201).json({ message: "Product saved!", product });
+        
+        res.json(product);
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
     }
 });
 
-// API to get scanned products
+// Scan and add to cart
+app.post('/scan', async (req, res) => {
+    try {
+        const { barcode } = req.body;
+        
+        // Find product in Added_Pdts collection
+        const addedProduct = await AddedProduct.findOne({ barcode });
+        
+        if (!addedProduct) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        // Check if product already exists in Products collection
+        let product = await Product.findOne({ id: barcode });
+        
+        if (product) {
+            // Update existing product
+            product.quantity += 1;
+            product.price += addedProduct.price;
+        } else {
+            // Create new product
+            product = new Product({
+                id: barcode,
+                name: addedProduct.name,
+                price: addedProduct.price,
+                image: addedProduct.image,
+                quantity: 1,
+                scannedAt: new Date()
+            });
+        }
+        
+        await product.save();
+        res.status(201).json({ message: "Product scanned and added!", product });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
 app.get('/products', async (req, res) => {
     try {
         const products = await Product.find().sort({ scannedAt: -1 });
@@ -56,7 +98,6 @@ app.get('/products', async (req, res) => {
     }
 });
 
-// API to update product quantity and price
 app.put('/products/:id', async (req, res) => {
     try {
         const { quantity, price } = req.body;
@@ -75,7 +116,6 @@ app.put('/products/:id', async (req, res) => {
     }
 });
 
-// API to delete a product
 app.delete('/products/:id', async (req, res) => {
     try {
         const product = await Product.findByIdAndDelete(req.params.id);
@@ -87,6 +127,36 @@ app.delete('/products/:id', async (req, res) => {
     }
 });
 
-// Server Listening
+app.post('/products/add', async (req, res) => {
+    try {
+        const { name, price, image, barcode } = req.body;
+        
+        if (!name || !price || !barcode) {
+            return res.status(400).json({ message: "Name, price, and barcode are required" });
+        }
+
+        const newProduct = new AddedProduct({
+            name,
+            price,
+            image,
+            barcode
+        });
+
+        await newProduct.save();
+        res.status(201).json({ message: "Product added successfully!", product: newProduct });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+app.get('/products/added', async (req, res) => {
+    try {
+        const products = await AddedProduct.find().sort({ createdAt: -1 });
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

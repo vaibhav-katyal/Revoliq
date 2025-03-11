@@ -6,6 +6,179 @@
     <title>Products - Revoliq SmartCart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="dashboard-pages.css">
+    <style>
+        /* Add Product Modal Styles */
+        .add-product-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .add-product-content {
+            position: relative;
+            background: linear-gradient(145deg, #ffffff, #f5f7fa);
+            margin: 20px auto;
+            padding: 40px;
+            width: 90%;
+            max-width: 700px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 50, 90, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .add-product-form {
+            display: grid;
+            gap: 25px;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 10px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group label i {
+            color: var(--accent);
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"] {
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="number"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 50, 90, 0.1);
+            outline: none;
+        }
+
+        .image-options {
+            display: grid;
+            gap: 15px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .image-option {
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px dashed var(--primary);
+            transition: all 0.3s;
+        }
+
+        .image-option:hover {
+            background: #f0f4f8;
+            border-color: var(--accent);
+        }
+
+        .preview-container {
+            margin-top: 15px;
+            text-align: center;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .preview-container img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0, 50, 90, 0.2);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 50, 90, 0.3);
+        }
+
+        .close-add-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--primary);
+            font-size: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .close-add-modal:hover {
+            background: var(--primary);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .add-btn {
+            background: linear-gradient(45deg, var(--accent), var(--accent-light));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(250, 150, 0, 0.2);
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(250, 150, 0, 0.3);
+        }
+
+        .add-btn i {
+            font-size: 1.1rem;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
@@ -57,7 +230,7 @@
                         <i class="fas fa-search"></i>
                         <input type="text" placeholder="Search products..." id="searchProducts">
                     </div>
-                    <button class="add-btn">
+                    <button class="add-btn" onclick="openAddProductModal()">
                         <i class="fas fa-plus"></i>
                         Add Product
                     </button>
@@ -68,13 +241,51 @@
                 <!-- Products will be dynamically inserted here -->
             </div>
 
-            <!-- Product Details Modal -->
-            <div class="modal" id="productModal">
-                <div class="modal-content">
-                    <span class="close-modal">&times;</span>
-                    <div class="product-details">
-                        <!-- Product details will be dynamically inserted here -->
-                    </div>
+            <!-- Add Product Modal -->
+            <div class="add-product-modal" id="addProductModal">
+                <div class="add-product-content">
+                    <span class="close-add-modal" onclick="closeAddProductModal()">×</span>
+                    <h2 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 30px;">Add New Product</h2>
+                    <form id="addProductForm" class="add-product-form">
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Product Name</label>
+                            <input type="text" id="productName" required placeholder="Enter product name">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-rupee-sign"></i> Price</label>
+                            <input type="number" id="productPrice" step="0.01" required placeholder="Enter price">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-image"></i> Product Image</label>
+                            <div class="image-options">
+                                <div class="image-option">
+                                    <input type="radio" name="imageType" id="imageUrl" value="url" checked>
+                                    <label for="imageUrl">Image URL</label>
+                                    <input type="text" id="imageUrlInput" placeholder="Enter image URL">
+                                </div>
+                                <div class="image-option">
+                                    <input type="radio" name="imageType" id="imageFile" value="file">
+                                    <label for="imageFile">Upload Image</label>
+                                    <input type="file" id="imageFileInput" accept="image/*">
+                                </div>
+                                <div class="preview-container" id="imagePreview"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-barcode"></i> Barcode</label>
+                            <div class="image-option">
+                                <input type="file" id="barcodeInput" accept="image/*" capture="environment">
+                                <div class="preview-container" id="barcodePreview"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-plus-circle"></i> Add Product
+                        </button>
+                    </form>
                 </div>
             </div>
         </main>

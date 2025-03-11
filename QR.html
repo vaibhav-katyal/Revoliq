@@ -192,75 +192,82 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
     <script>
-        // Product database
-        const productDatabase = {
-            "ABC-abc-1234": { id: "P001", name: "Kurkure", price: 10.99, image: "https://tse3.mm.bing.net/th?id=OIP.7bEeWuY8SgCdAfe71OrUjgHaHa&pid=Api&P=0&h=180" },
-            "9780201379624": { id: "P002", name: "Coca Cola", price: 15.99, image: "https://cdn0.woolworths.media/content/wowproductimages/large/093167.jpg" },
-            "9785342379625": { id: "P003", name: "Sprite", price: 47.49, image: "https://via.placeholder.com/100" }
-        };
-
-        // DOM elements
-        const startButton = document.getElementById('start-button');
-        const stopButton = document.getElementById('stop-button');
-        const cartButton = document.getElementById('cart-button');
-        const resultElement = document.getElementById('qr-result');
-        const loadingSpinner = document.getElementById('loading-spinner');
-
-        // Scanner state
+        const API_URL = 'http://localhost:5000';
         let scannerActive = false;
         let lastScannedCode = null;
         let scanBuffer = [];
         let isProcessing = false;
 
         // Event listeners
-        startButton.addEventListener('click', startScanner);
-        stopButton.addEventListener('click', stopScanner);
-        cartButton.addEventListener('click', goToCart);
-
-        // Check if Quagga is loaded
-        if (typeof Quagga === 'undefined') {
-            showError("Error: Quagga library not loaded. Please check your internet connection and try again.");
-        }
+        document.getElementById('start-button').addEventListener('click', startScanner);
+        document.getElementById('stop-button').addEventListener('click', stopScanner);
+        document.getElementById('cart-button').addEventListener('click', goToCart);
 
         function showError(message) {
-            resultElement.innerHTML = `<span class="error-message">${message}</span>`;
-            loadingSpinner.style.display = 'none';
-            startButton.disabled = false;
-            stopButton.disabled = true;
+            document.getElementById('qr-result').innerHTML = `<span class="error-message">${message}</span>`;
+            document.getElementById('loading-spinner').style.display = 'none';
+            document.getElementById('start-button').disabled = false;
+            document.getElementById('stop-button').disabled = true;
         }
 
         function showSuccess(message) {
-            resultElement.innerHTML = `<span class="success-message">${message}</span>`;
+            document.getElementById('qr-result').innerHTML = `<span class="success-message">${message}</span>`;
         }
 
         function showMessage(message) {
-            resultElement.textContent = message;
+            document.getElementById('qr-result').textContent = message;
+        }
+
+        async function processBarcode(code) {
+            if (isProcessing) return;
+            isProcessing = true;
+
+            try {
+                // Send barcode to server to find product
+                const response = await fetch(`${API_URL}/scan`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ barcode: code })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess(`Product found: ${data.product.name}`);
+                    stopScanner();
+                    setTimeout(() => {
+                        window.location.href = 'scanned-product.html';
+                    }, 1500);
+                } else {
+                    showError(data.message || 'Product not found');
+                    isProcessing = false;
+                }
+            } catch (error) {
+                console.error('Error processing barcode:', error);
+                showError('Error processing barcode');
+                isProcessing = false;
+            }
         }
 
         function startScanner() {
             if (scannerActive) return;
             
-            // Show loading spinner
-            loadingSpinner.style.display = 'block';
-            startButton.disabled = true;
+            document.getElementById('loading-spinner').style.display = 'block';
+            document.getElementById('start-button').disabled = true;
             showMessage("Starting scanner, please wait...");
             
-            // Check for camera support
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                showError("Your browser doesn't support camera access. Please try a different browser.");
+                showError("Your browser doesn't support camera access");
                 return;
             }
             
-            // Request camera permission first
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
                 .then(function(stream) {
-                    // Camera permission granted, now initialize Quagga
-                    stream.getTracks().forEach(track => track.stop()); // Stop the stream as Quagga will create its own
-                    
+                    stream.getTracks().forEach(track => track.stop());
                     initializeQuagga();
                 })
                 .catch(function(err) {
-                    showError("Camera access denied or error: " + err.message);
+                    showError("Camera access denied: " + err.message);
                 });
         }
 
@@ -271,95 +278,41 @@
                     type: "LiveStream",
                     target: document.querySelector('#interactive'),
                     constraints: {
-                        width: { min: 640 },
-                        height: { min: 480 },
-                        facingMode: "environment",
-                        aspectRatio: { min: 1, max: 2 }
+                        facingMode: "environment"
                     }
                 },
-                locator: {
-                    patchSize: "medium",
-                    halfSample: true
-                },
-                numOfWorkers: 2,
-                frequency: 10,
                 decoder: {
                     readers: [
                         "ean_reader",
                         "ean_8_reader",
-                        "upc_reader",
-                        "upc_e_reader",
-                        "code_128_reader"
+                        "code_128_reader",
+                        "code_39_reader",
+                        "upc_reader"
                     ]
-                },
-                locate: true
+                }
             }, function(err) {
-                loadingSpinner.style.display = 'none';
-                
                 if (err) {
-                    console.error("Quagga initialization error:", err);
-                    showError("Scanner error: " + err);
+                    showError(err);
                     return;
                 }
                 
-                console.log("Quagga initialization finished");
-                Quagga.start();
                 scannerActive = true;
-                startButton.disabled = true;
-                stopButton.disabled = false;
+                document.getElementById('loading-spinner').style.display = 'none';
+                document.getElementById('start-button').disabled = true;
+                document.getElementById('stop-button').disabled = false;
                 showMessage("Scanner active. Point at a barcode.");
                 
-                // Set up event handlers
-                Quagga.onDetected(handleBarcodeDetection);
-                Quagga.onProcessed(handleProcessed);
+                Quagga.start();
             });
-        }
 
-        function handleProcessed(result) {
-            var drawingCtx = Quagga.canvas.ctx.overlay,
-                drawingCanvas = Quagga.canvas.dom.overlay;
-
-            if (result) {
-                if (drawingCtx && drawingCanvas) {
-                    drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-                    
-                    if (result.boxes) {
-                        result.boxes.filter(function(box) {
-                            return box !== result.box;
-                        }).forEach(function(box) {
-                            Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, { color: "green", lineWidth: 2 });
-                        });
-                    }
-
-                    if (result.box) {
-                        Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: "#00F", lineWidth: 2 });
-                    }
-                }
-            }
-        }
-
-        function handleBarcodeDetection(result) {
-            if (isProcessing) return;
-            
-            const code = result.codeResult.code;
-            const confidence = result.codeResult.confidence;
-            
-            // Only process codes with high confidence
-            if (confidence < 0.7) {
-                return;
-            }
-            
-            // Add to buffer for consistency check
-            scanBuffer.push(code);
-            
-            // Keep buffer at max 5 items
-            if (scanBuffer.length > 5) {
-                scanBuffer.shift();
-            }
-            
-            // Check if we have at least 3 identical codes in the buffer
-            if (scanBuffer.length >= 3) {
-                // Count occurrences of each code
+            Quagga.onDetected(function(result) {
+                const code = result.codeResult.code;
+                
+                // Add to buffer
+                scanBuffer.push(code);
+                if (scanBuffer.length > 5) scanBuffer.shift();
+                
+                // Check if we have consistent readings
                 const counts = {};
                 let maxCount = 0;
                 let mostFrequentCode = null;
@@ -372,94 +325,32 @@
                     }
                 });
                 
-                // If we have a consistent code with at least 3 occurrences
                 if (maxCount >= 3 && mostFrequentCode !== lastScannedCode) {
-                    processBarcode(mostFrequentCode);
                     lastScannedCode = mostFrequentCode;
+                    processBarcode(mostFrequentCode);
                 }
-            }
-        }
-
-        function processBarcode(code) {
-            isProcessing = true;
-            
-            // Look up product in database
-            const product = productDatabase[code];
-            
-            if (product) {
-                const { id, name, price, image } = product;
-                showSuccess(`Scanned: ${id} (${name}) - ₹${price.toFixed(2)}`);
-                
-                // Store product data in localStorage for the cart page
-                const cartItems = JSON.parse(localStorage.getItem("cartItems") || "[]");
-                
-                // Check if product already exists in cart
-                const existingProductIndex = cartItems.findIndex(item => item.id === id);
-                
-                if (existingProductIndex >= 0) {
-                    // Increment quantity if product already in cart
-                    cartItems[existingProductIndex].quantity += 1;
-                } else {
-                    // Add new product to cart
-                    cartItems.push({
-                        id,
-                        name,
-                        price,
-                        quantity: 1,
-                        image
-                    });
-                }
-                
-                // Save updated cart to localStorage
-                localStorage.setItem("cartItems", JSON.stringify(cartItems));
-                
-                // Simulate server request
-                setTimeout(() => {
-                    isProcessing = false;
-                }, 1000);
-
-                // Send the scanned product to the server
-                fetch("http://localhost:5000/scan", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ id, name, price, image, scannedAt: new Date() }) // Include all necessary details
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    // Redirect to scanned-product.html after successful scan
-                    window.location.href = "scanned-product.html";
-                })
-                .catch(error => {
-                    console.error("Error saving product:", error);
-                });
-            } else {
-                showMessage(`Unknown product code: ${code}`);
-                isProcessing = false;
-            }
+            });
         }
 
         function stopScanner() {
             if (!scannerActive) return;
-            
             Quagga.stop();
             scannerActive = false;
-            startButton.disabled = false;
-            stopButton.disabled = true;
-            showMessage("Scanner stopped. Click 'Start Scan' to begin again.");
+            document.getElementById('start-button').disabled = false;
+            document.getElementById('stop-button').disabled = true;
+            showMessage("Scanner stopped");
         }
 
         function goToCart() {
-            window.location.href = "scanned-product.html";
+            window.location.href = 'scanned-product.html';
         }
 
-        // Handle page visibility changes to stop scanner when page is hidden
+        // Handle page visibility
         document.addEventListener('visibilitychange', function() {
             if (document.hidden && scannerActive) {
                 stopScanner();
             }
         });
     </script>
-
 </body>
 </html>
