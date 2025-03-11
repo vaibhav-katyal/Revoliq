@@ -7,6 +7,46 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="dashboard-pages.css">
 </head>
+<style>
+/* Add CSS to adjust the size of product images */
+.inventory-table img {
+    width: 100px;  /* Set the desired width */
+    height: 100px; /* Set the desired height */
+    object-fit: cover; /* Ensure the image maintains its aspect ratio */
+    border-radius: 5px; /* Optional: Add some border radius for better appearance */
+    display: block; /* Ensure that the image is displayed as a block */
+    margin: 0 auto; /* Center the image horizontally */
+}
+
+/* Align text and images correctly */
+.inventory-table th, .inventory-table td {
+    vertical-align: middle; /* Align text and images vertically in the middle */
+    text-align: center; /* Center-align text and images */
+    padding: 10px; /* Add some padding to table cells */
+}
+
+.inventory-table th {
+    background-color: #f4f4f4; /* Add a background color to table headers */
+}
+
+.inventory-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Add a background color to even table rows */
+}
+
+.inventory-table .product-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.inventory-table .product-name {
+    margin-top: 5px; /* Add some space between the image and the product name */
+    font-size: 0.9rem; /* Set the font size for the product name */
+    font-weight: bold; /* Make the product name bold */
+    color: #333; /* Set the color for the product name */
+}
+</style>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
