@@ -4,17 +4,12 @@ const API_URL = 'http://localhost:5000';
 // Fetch and display products
 async function fetchProducts() {
     try {
-        // Fetch both regular and added products
-        const [regularResponse, addedResponse] = await Promise.all([
-            fetch(`${API_URL}/products`),
-            fetch(`${API_URL}/products/added`)
-        ]);
+        // Fetch added products only
+        const response = await fetch(`${API_URL}/products/added`);
+        const addedProducts = await response.json();
 
-        const regularProducts = await regularResponse.json();
-        const addedProducts = await addedResponse.json();
-
-        // Combine and display all products
-        displayProducts([...regularProducts, ...addedProducts]);
+        // Display added products
+        displayProducts(addedProducts);
     } catch (error) {
         console.error('Error fetching products:', error);
     }
@@ -59,7 +54,6 @@ function closeAddProductModal() {
     document.body.style.overflow = 'auto'; // Restore scrolling
     document.getElementById('addProductForm').reset();
     document.getElementById('imagePreview').innerHTML = '';
-    document.getElementById('barcodePreview').innerHTML = '';
 }
 
 // Handle image preview
@@ -99,10 +93,6 @@ document.getElementById('imageFileInput').addEventListener('change', function() 
     handleImagePreview(this, 'imagePreview');
 });
 
-document.getElementById('barcodeInput').addEventListener('change', function() {
-    handleImagePreview(this, 'barcodePreview');
-});
-
 document.getElementById('imageUrlInput').addEventListener('input', function() {
     const preview = document.getElementById('imagePreview');
     preview.innerHTML = '';
@@ -119,8 +109,8 @@ document.getElementById('addProductForm').addEventListener('submit', async (e) =
 
     const name = document.getElementById('productName').value;
     const price = parseFloat(document.getElementById('productPrice').value);
+    const barcode = document.getElementById('barcodeInput').value;
     let image = '';
-    let barcode = '';
 
     try {
         // Get image data
@@ -131,12 +121,6 @@ document.getElementById('addProductForm').addEventListener('submit', async (e) =
             if (imageFile) {
                 image = await convertToBase64(imageFile);
             }
-        }
-
-        // Get barcode data
-        const barcodeFile = document.getElementById('barcodeInput').files[0];
-        if (barcodeFile) {
-            barcode = await convertToBase64(barcodeFile);
         }
 
         const response = await fetch(`${API_URL}/products/add`, {

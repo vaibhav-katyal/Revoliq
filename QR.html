@@ -169,6 +169,37 @@
             50% { transform: translate(25%, 25%); }
             100% { transform: translate(-25%, -25%); }
         }
+
+        .manual-entry {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .manual-entry input {
+            padding: 10px;
+            border: 2px solid #00796b;
+            border-radius: 6px;
+            font-size: 16px;
+            width: 70%;
+        }
+
+        .manual-entry .btn.manual {
+            background: #00796b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .manual-entry .btn.manual:hover {
+            opacity: 0.85;
+        }
     </style>
 </head>
 <body>
@@ -188,6 +219,12 @@
             <button class="btn stop" id="stop-button" disabled>Stop Scan</button>
             <button class="btn cart" id="cart-button">Cart</button>
         </div>
+
+        <!-- Manual barcode entry -->
+        <div class="manual-entry">
+            <input type="text" id="manual-barcode" placeholder="Enter barcode number">
+            <button class="btn manual" id="manual-button">Submit</button>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
@@ -202,6 +239,7 @@
         document.getElementById('start-button').addEventListener('click', startScanner);
         document.getElementById('stop-button').addEventListener('click', stopScanner);
         document.getElementById('cart-button').addEventListener('click', goToCart);
+        document.getElementById('manual-button').addEventListener('click', handleManualEntry);
 
         function showError(message) {
             document.getElementById('qr-result').innerHTML = `<span class="error-message">${message}</span>`;
@@ -343,6 +381,15 @@
 
         function goToCart() {
             window.location.href = 'scanned-product.html';
+        }
+
+        function handleManualEntry() {
+            const manualBarcode = document.getElementById('manual-barcode').value.trim();
+            if (manualBarcode) {
+                processBarcode(manualBarcode);
+            } else {
+                showError("Please enter a valid barcode number");
+            }
         }
 
         // Handle page visibility
