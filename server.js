@@ -2,10 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const qrcode = require('qrcode');
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: '50mb' }));  // Increased limit for base64 images
+app.use(express.json({ limit: '50mb' }));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -17,13 +18,15 @@ mongoose.connect(process.env.MONGO_URI, {
 // Cart Schema
 const cartSchema = new mongoose.Schema({
     cartId: { type: String, required: true, unique: true },
-    retailerId: { type: String, required: true },  // Who owns the cart
+    retailerId: { type: String, required: true },
     products: [{ 
         productId: String, 
         name: String, 
         price: Number, 
         quantity: Number 
     }],
+    active: { type: Boolean, default: true },
+    qrCode: { type: String },
     createdAt: { type: Date, default: Date.now }
 });
 
@@ -32,11 +35,21 @@ const Cart = mongoose.model('Cart', cartSchema);
 // Scanned Cart Schema
 const scannedCartSchema = new mongoose.Schema({
     cartId: { type: String, required: true },
-    userId: { type: String, required: true },
+    retailerId: { type: String, required: true },
     scannedAt: { type: Date, default: Date.now }
 });
 
 const ScannedCart = mongoose.model('ScannedCart', scannedCartSchema);
+
+// Get all carts
+app.get('/carts', async (req, res) => {
+    try {
+        const carts = await Cart.find().sort({ createdAt: -1 });
+        res.json(carts);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
 
 // Retailer adds a new cart
 app.post('/cart/add', async (req, res) => {
@@ -52,64 +65,58 @@ app.post('/cart/add', async (req, res) => {
             return res.status(400).json({ message: "Cart already exists" });
         }
 
-        const newCart = new Cart({ cartId, retailerId, products: [] });
-        await newCart.save();
+        // Generate QR code
+        const qrData = JSON.stringify({ cartId, retailerId });
+        const qrCode = await qrcode.toDataURL(qrData);
 
+        const newCart = new Cart({
+            cartId,
+            retailerId,
+            products: [],
+            qrCode
+        });
+
+        await newCart.save();
         res.status(201).json({ message: "Cart added successfully!", cart: newCart });
     } catch (error) {
         res.status(500).json({ message: "Error adding cart", error });
     }
 });
 
-// Scan QR code and add scanned cart
+// Scan QR code and verify cart
 app.post('/api/qr/scan', async (req, res) => {
     try {
-        const { cartId, userId } = req.body;
+        const { cartId, retailerId } = req.body;
 
-        // Check if the QR code matches a cart
-        const cart = await Cart.findOne({ cartId });
-
-        if (!cart) {
-            return res.status(404).json({ message: "Cart not found" });
-        }
-
-        // Save scanned cart entry
-        const newScan = new ScannedCart({ cartId, userId });
-        await newScan.save();
-
-        res.status(200).json({ success: true, message: "Cart scanned successfully!", cartId: cart.cartId });
-    } catch (error) {
-        res.status(500).json({ message: "Error scanning QR Code", error });
-    }
-});
-
-// Fetch cart details
-app.get('/cart/:cartId', async (req, res) => {
-    try {
-        const { cartId } = req.params;
-        const cart = await Cart.findOne({ cartId });
+        // Find cart in database
+        const cart = await Cart.findOne({ cartId, retailerId });
 
         if (!cart) {
-            return res.status(404).json({ message: "Cart not found" });
+            return res.status(404).json({ message: "Invalid cart" });
         }
 
-        res.json(cart);
+        if (!cart.active) {
+            return res.status(400).json({ message: "Cart is inactive" });
+        }
+
+        // Add to scanned carts collection
+        const scannedCart = new ScannedCart({
+            cartId: cart.cartId,
+            retailerId: cart.retailerId
+        });
+        await scannedCart.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Cart verified successfully!",
+            cartId: cart.cartId
+        });
     } catch (error) {
-        res.status(500).json({ message: "Error fetching cart details", error });
+        res.status(500).json({ message: "Error verifying cart", error });
     }
 });
 
-// Fetch all scanned carts
-app.get('/scanned-carts', async (req, res) => {
-    try {
-        const scannedCarts = await ScannedCart.find().sort({ scannedAt: -1 });
-        res.json(scannedCarts);
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error });
-    }
-});
-
-// Product Schema (existing)
+// Product Schema
 const productSchema = new mongoose.Schema({
     id: String,
     name: String,
@@ -120,7 +127,7 @@ const productSchema = new mongoose.Schema({
 });
 const Product = mongoose.model('Product', productSchema);
 
-// Added Products Schema (new)
+// Added Products Schema
 const addedProductSchema = new mongoose.Schema({
     name: String,
     price: Number,

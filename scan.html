@@ -181,26 +181,33 @@
         });
 
         function onScanSuccess(decodedText) {
-            fetch("http://localhost:5000/api/qr/scan", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ cartId: decodedText })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById("result").innerHTML = `<span class="success-message">QR Code Scanned ✅</span>`;
-                    setTimeout(() => {
-                        window.location.href = `/scanned-products.html?cartId=${data.cartId}`;
-                    }, 1500);
-                } else {
-                    document.getElementById("result").innerHTML = `<span class="error-message">Invalid QR Code ❌</span>`;
-                }
-            })
-            .catch(error => {
-                console.error("Error scanning QR:", error);
-                document.getElementById("result").innerHTML = `<span class="error-message">Scan failed. Try again! ❌</span>`;
-            });
+            try {
+                const cartData = JSON.parse(decodedText);
+                
+                fetch("http://localhost:5000/api/qr/scan", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(cartData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("result").innerHTML = `<span class="success-message">QR Code Scanned ✅</span>`;
+                        setTimeout(() => {
+                            window.location.href = `/cart-success.html?cartId=${data.cartId}`;
+                        }, 1500);
+                    } else {
+                        document.getElementById("result").innerHTML = `<span class="error-message">Invalid QR Code ❌</span>`;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error scanning QR:", error);
+                    document.getElementById("result").innerHTML = `<span class="error-message">Scan failed. Try again! ❌</span>`;
+                });
+            } catch (error) {
+                console.error("Error parsing QR code:", error);
+                document.getElementById("result").innerHTML = `<span class="error-message">Invalid QR Code format ❌</span>`;
+            }
         }
     </script>
 </body>

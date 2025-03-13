@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Connected - Revoliq SmartCart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #00796b;
+            --success: #2ecc71;
+            --text: #2c3e50;
+            --background: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--background), #e9ecef);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .success-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        .success-icon i {
+            color: white;
+            font-size: 50px;
+        }
+
+        h1 {
+            color: var(--text);
+            font-size: 28px;
+            margin-bottom: 15px;
+            animation: slideUp 0.5s ease-out 0.2s both;
+        }
+
+        .cart-id {
+            color: var(--primary);
+            font-size: 20px;
+            margin-bottom: 30px;
+            padding: 10px 20px;
+            background: rgba(0, 121, 107, 0.1);
+            border-radius: 10px;
+            display: inline-block;
+            animation: slideUp 0.5s ease-out 0.4s both;
+        }
+
+        .start-shopping {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            animation: slideUp 0.5s ease-out 0.6s both;
+        }
+
+        .start-shopping:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 121, 107, 0.2);
+        }
+
+        .decoration {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(0, 121, 107, 0.1), rgba(46, 204, 113, 0.1));
+            z-index: 0;
+        }
+
+        .decoration-1 { top: -100px; left: -100px; }
+        .decoration-2 { bottom: -100px; right: -100px; }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="decoration decoration-1"></div>
+        <div class="decoration decoration-2"></div>
+        
+        <div class="success-icon pulse">
+            <i class="fas fa-check"></i>
+        </div>
+        
+        <h1>Cart Connected Successfully!</h1>
+        <div class="cart-id" id="cartIdDisplay">
+            Cart #<span id="cartIdText"></span>
+        </div>
+        
+        <a href="QR.html"><button class="start-shopping">
+            Start Shopping <i class="fas fa-arrow-right"></i>
+        </button></a>
+    </div>
+
+    <script>
+        // Get cart ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const cartId = urlParams.get('cartId');
+        
+        // Display cart ID
+        document.getElementById('cartIdText').textContent = cartId;
+
+        // Start shopping function
+        function startShopping() {
+            window.location.href = `/shopping.html?cartId=${cartId}`;
+        }
+    </script>
+</body>
+</html>

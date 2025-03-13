@@ -178,6 +178,61 @@
         .add-btn i {
             font-size: 1.1rem;
         }
+
+        /* Add Cart Modal Styles */
+        #addCartModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .cart-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            margin: 50px auto;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-modal-content h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .cart-form-group {
+            margin-bottom: 20px;
+        }
+
+        .cart-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .cart-form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .cart-form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.1);
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -198,8 +253,12 @@
                         <i class="fas fa-box"></i>
                         <span>Products</span>
                     </a>
-                    <a href="orders.html" class="nav-item">
+                    <a href="hard_carts.html" class="nav-item">
                         <i class="fas fa-shopping-cart"></i>
+                        <span>Smart Carts</span>
+                    </a>
+                    <a href="orders.html" class="nav-item">
+                        <i class="fas fa-shopping-bag"></i>
                         <span>Orders</span>
                     </a>
                     <a href="customers.html" class="nav-item">
@@ -237,19 +296,20 @@
                     <button class="add-btn" onclick="openAddCartModal()">
                         <i class="fas fa-shopping-cart"></i> Add Cart
                     </button>
-                    
                 </div>
             </div>
-            <div class="add-product-modal" id="addCartModal">
-                <div class="add-product-content">
+
+            <!-- Add Cart Modal -->
+            <div id="addCartModal">
+                <div class="cart-modal-content">
                     <span class="close-add-modal" onclick="closeAddCartModal()">×</span>
                     <h2>Add New Cart</h2>
                     <form id="addCartForm">
-                        <div class="form-group">
+                        <div class="cart-form-group">
                             <label>Cart ID</label>
                             <input type="text" id="cartId" required placeholder="Enter Cart ID">
                         </div>
-                        <div class="form-group">
+                        <div class="cart-form-group">
                             <label>Retailer ID</label>
                             <input type="text" id="retailerId" required placeholder="Enter Retailer ID">
                         </div>
