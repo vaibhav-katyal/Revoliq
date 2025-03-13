@@ -176,3 +176,39 @@ document.getElementById('searchProducts').addEventListener('input', (e) => {
 fetchProducts();
 // Refresh data every 30 seconds
 setInterval(fetchProducts, 30000);
+
+// Open/Close Cart Modal
+function openAddCartModal() {
+    document.getElementById('addCartModal').style.display = 'block';
+}
+
+function closeAddCartModal() {
+    document.getElementById('addCartModal').style.display = 'none';
+}
+
+// Handle Add Cart Form Submission
+document.getElementById('addCartForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const cartId = document.getElementById('cartId').value;
+    const retailerId = document.getElementById('retailerId').value;
+
+    try {
+        const response = await fetch('http://localhost:5000/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cartId, retailerId })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('Cart added successfully!');
+            closeAddCartModal();
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        alert(`Failed to add cart: ${error.message}`);
+    }
+});

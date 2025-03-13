@@ -1,6 +1,6 @@
-const API_URL = "http://localhost:5000"; // Change this to your API endpoint
+const API_URL = "http://localhost:5000"; // Change this to your actual API endpoint
 
-// Fetch data
+// Fetch user purchases & update UI
 async function fetchData() {
     try {
         const response = await fetch(`${API_URL}/purchases`);
@@ -14,7 +14,7 @@ async function fetchData() {
     }
 }
 
-// Update Dashboard Stats
+// ✅ Update Dashboard Stats
 function updateDashboard(data) {
     const totalPurchases = data.length;
     const totalSpent = data.reduce((sum, item) => sum + item.price, 0);
@@ -23,7 +23,7 @@ function updateDashboard(data) {
     document.getElementById("totalSpent").textContent = `$${totalSpent.toFixed(2)}`;
 }
 
-// Update Orders Table
+// ✅ Update Orders Table
 function updateOrders(data) {
     const ordersTable = document.getElementById("ordersTable");
     ordersTable.innerHTML = "";
@@ -40,11 +40,15 @@ function updateOrders(data) {
     });
 }
 
-// Update Chart
+// ✅ Update Spending Chart
 function updateChart(data) {
     const ctx = document.getElementById("purchaseChart").getContext("2d");
 
-    new Chart(ctx, {
+    if (window.purchaseChart) {
+        window.purchaseChart.destroy(); // Destroy previous chart if exists
+    }
+
+    window.purchaseChart = new Chart(ctx, {
         type: "line",
         data: {
             labels: data.map(order => order.product),
@@ -61,16 +65,66 @@ function updateChart(data) {
     });
 }
 
-// Page Navigation
-document.querySelectorAll(".nav-item").forEach(item => {
-    item.addEventListener("click", function() {
-        document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
-        document.getElementById(this.dataset.page).classList.add("active");
+// ✅ Handle User Authentication & Profile Display
+import { auth, db, doc, getDoc, signOut } from "./login/firebase-auth.js";
 
-        document.querySelectorAll(".nav-item").forEach(nav => nav.classList.remove("active"));
-        this.classList.add("active");
+document.addEventListener("DOMContentLoaded", async () => {
+    const userIdSpan = document.getElementById("userId");
+    const userNameSpan = document.getElementById("userName");
+    const userEmailSpan = document.getElementById("userEmail");
+    const logoutButton = document.getElementById("logout");
+
+    // Check if user is logged in
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                userIdSpan.textContent = userData.uid;
+                userNameSpan.textContent = userData.name;
+                userEmailSpan.textContent = userData.email;
+            } else {
+                console.error("User document not found in Firestore.");
+            }
+        } else {
+            // Redirect to login if not logged in
+            window.location.href = "login.html";
+        }
+    });
+
+    // ✅ Logout functionality
+    logoutButton.addEventListener("click", async () => {
+        await signOut(auth);
+        window.location.href = "login.html";
     });
 });
 
-// Fetch data on load
+// ✅ Page Navigation
+document.addEventListener("DOMContentLoaded", () => {
+    const navButtons = document.querySelectorAll(".nav-item");
+    const pages = document.querySelectorAll(".page");
+
+    navButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+            // Remove active class from all buttons
+            navButtons.forEach((btn) => btn.classList.remove("active"));
+
+            // Add active class to clicked button
+            this.classList.add("active");
+
+            // Hide all pages
+            pages.forEach((page) => page.classList.remove("active"));
+
+            // Show the selected page
+            const selectedPage = document.getElementById(this.dataset.page);
+            if (selectedPage) {
+                selectedPage.classList.add("active");
+            }
+        });
+    });
+});
+
+// ✅ Fetch data on page load
 fetchData();

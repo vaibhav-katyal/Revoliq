@@ -14,6 +14,101 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log("MongoDB Connected"))
   .catch(err => console.error(err));
 
+// Cart Schema
+const cartSchema = new mongoose.Schema({
+    cartId: { type: String, required: true, unique: true },
+    retailerId: { type: String, required: true },  // Who owns the cart
+    products: [{ 
+        productId: String, 
+        name: String, 
+        price: Number, 
+        quantity: Number 
+    }],
+    createdAt: { type: Date, default: Date.now }
+});
+
+const Cart = mongoose.model('Cart', cartSchema);
+
+// Scanned Cart Schema
+const scannedCartSchema = new mongoose.Schema({
+    cartId: { type: String, required: true },
+    userId: { type: String, required: true },
+    scannedAt: { type: Date, default: Date.now }
+});
+
+const ScannedCart = mongoose.model('ScannedCart', scannedCartSchema);
+
+// Retailer adds a new cart
+app.post('/cart/add', async (req, res) => {
+    try {
+        const { cartId, retailerId } = req.body;
+
+        if (!cartId || !retailerId) {
+            return res.status(400).json({ message: "Cart ID and Retailer ID are required" });
+        }
+
+        const existingCart = await Cart.findOne({ cartId });
+        if (existingCart) {
+            return res.status(400).json({ message: "Cart already exists" });
+        }
+
+        const newCart = new Cart({ cartId, retailerId, products: [] });
+        await newCart.save();
+
+        res.status(201).json({ message: "Cart added successfully!", cart: newCart });
+    } catch (error) {
+        res.status(500).json({ message: "Error adding cart", error });
+    }
+});
+
+// Scan QR code and add scanned cart
+app.post('/api/qr/scan', async (req, res) => {
+    try {
+        const { cartId, userId } = req.body;
+
+        // Check if the QR code matches a cart
+        const cart = await Cart.findOne({ cartId });
+
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+
+        // Save scanned cart entry
+        const newScan = new ScannedCart({ cartId, userId });
+        await newScan.save();
+
+        res.status(200).json({ success: true, message: "Cart scanned successfully!", cartId: cart.cartId });
+    } catch (error) {
+        res.status(500).json({ message: "Error scanning QR Code", error });
+    }
+});
+
+// Fetch cart details
+app.get('/cart/:cartId', async (req, res) => {
+    try {
+        const { cartId } = req.params;
+        const cart = await Cart.findOne({ cartId });
+
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+
+        res.json(cart);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching cart details", error });
+    }
+});
+
+// Fetch all scanned carts
+app.get('/scanned-carts', async (req, res) => {
+    try {
+        const scannedCarts = await ScannedCart.find().sort({ scannedAt: -1 });
+        res.json(scannedCarts);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
 // Product Schema (existing)
 const productSchema = new mongoose.Schema({
     id: String,
@@ -88,6 +183,7 @@ app.post('/scan', async (req, res) => {
     }
 });
 
+// Fetch all products
 app.get('/products', async (req, res) => {
     try {
         const products = await Product.find().sort({ scannedAt: -1 });
@@ -97,6 +193,7 @@ app.get('/products', async (req, res) => {
     }
 });
 
+// Update product details
 app.put('/products/:id', async (req, res) => {
     try {
         const { quantity, price } = req.body;
@@ -115,6 +212,7 @@ app.put('/products/:id', async (req, res) => {
     }
 });
 
+// Delete product
 app.delete('/products/:id', async (req, res) => {
     try {
         const product = await Product.findByIdAndDelete(req.params.id);
@@ -126,6 +224,7 @@ app.delete('/products/:id', async (req, res) => {
     }
 });
 
+// Add new product
 app.post('/products/add', async (req, res) => {
     try {
         const { name, price, image, barcode } = req.body;
@@ -148,6 +247,7 @@ app.post('/products/add', async (req, res) => {
     }
 });
 
+// Fetch all added products
 app.get('/products/added', async (req, res) => {
     try {
         const products = await AddedProduct.find().sort({ createdAt: -1 });

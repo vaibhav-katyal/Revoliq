@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanned Carts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Scanned Carts</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Cart ID</th>
+                <th>User ID</th>
+                <th>Scanned At</th>
+            </tr>
+        </thead>
+        <tbody id="scanned-carts-body"></tbody>
+    </table>
+
+    <script>
+        fetch("http://localhost:5000/scanned-carts")
+        .then(res => res.json())
+        .then(carts => {
+            document.getElementById("scanned-carts-body").innerHTML = carts.map(cart => `
+                <tr>
+                    <td>${cart.cartId}</td>
+                    <td>${cart.userId}</td>
+                    <td>${new Date(cart.scannedAt).toLocaleString()}</td>
+                </tr>
+            `).join("");
+        });
+    </script>
+</body>
+</html>
