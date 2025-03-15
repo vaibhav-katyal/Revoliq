@@ -1,136 +1,153 @@
-// API Base URL
-const API_URL = 'http://localhost:5000';
-
-// Fetch and display customers
-async function fetchCustomers() {
-    try {
-        const response = await fetch(`${API_URL}/products`);
-        const products = await response.json();
-        const customers = generateCustomers(products);
-        displayCustomers(customers);
-    } catch (error) {
-        console.error('Error fetching customers:', error);
+// Sample customer data (replace with actual API calls)
+const customers = [
+    {
+        id: 'CUST001',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        totalVisits: 15,
+        lastVisit: '2024-03-10',
+        status: 'active'
+    },
+    {
+        id: 'CUST002',
+        name: 'Jane Smith',
+        email: 'jane.smith@example.com',
+        totalVisits: 8,
+        lastVisit: '2024-03-08',
+        status: 'active'
+    },
+    {
+        id: 'CUST003',
+        name: 'Mike Johnson',
+        email: 'mike.j@example.com',
+        totalVisits: 3,
+        lastVisit: '2024-02-28',
+        status: 'inactive'
+    },
+    {
+        id: 'CUST004',
+        name: 'Sarah Williams',
+        email: 'sarah.w@example.com',
+        totalVisits: 12,
+        lastVisit: '2024-03-09',
+        status: 'active'
+    },
+    {
+        id: 'CUST005',
+        name: 'Robert Brown',
+        email: 'robert.b@example.com',
+        totalVisits: 6,
+        lastVisit: '2024-03-05',
+        status: 'active'
     }
-}
+];
 
-// Generate mock customer data based on products
-function generateCustomers(products) {
-    const customers = [];
-    const names = ['John Doe', 'Jane Smith', 'Mike Johnson', 'Sarah Williams', 'David Brown'];
-    
-    products.forEach((product, index) => {
-        if (!customers.find(c => c.name === names[index % names.length])) {
-            customers.push({
-                id: `CUST-${index + 1}`,
-                name: names[index % names.length],
-                email: `${names[index % names.length].toLowerCase().replace(' ', '.')}@example.com`,
-                orders: Math.floor(Math.random() * 20) + 1,
-                totalSpent: product.price * (Math.floor(Math.random() * 5) + 1),
-                lastOrder: product.scannedAt,
-                avatar: `https://i.pravatar.cc/150?img=${index + 1}`
-            });
-        }
-    });
-    
-    return customers;
-}
-
-// Display customers
-function displayCustomers(customers) {
-    const customersGrid = document.getElementById('customersGrid');
-    customersGrid.innerHTML = customers.map(customer => `
-        <div class="customer-card" onclick="showCustomerDetails('${customer.id}')">
-            <div class="customer-header">
-                <img src="${customer.avatar}" alt="${customer.name}" class="customer-avatar">
-                <div class="customer-info">
-                    <h3>${customer.name}</h3>
-                    <p class="customer-email">${customer.email}</p>
-                </div>
-            </div>
-            <div class="customer-stats">
-                <div class="stat">
-                    <div class="stat-label">Orders</div>
-                    <div class="stat-value">${customer.orders}</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">Total Spent</div>
-                    <div class="stat-value">₹${customer.totalSpent.toFixed(2)}</div>
-                </div>
-            </div>
-        </div>
+// Populate customers table
+function populateCustomersTable(customersData) {
+    const tableBody = document.getElementById('customersTableBody');
+    tableBody.innerHTML = customersData.map(customer => `
+        <tr>
+            <td>${customer.id}</td>
+            <td>${customer.name}</td>
+            <td>${customer.email}</td>
+            <td>${customer.totalVisits}</td>
+            <td>${formatDate(customer.lastVisit)}</td>
+            <td>
+                <span class="status-badge ${customer.status === 'active' ? 'status-active' : 'status-inactive'}">
+                    ${customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
+                </span>
+            </td>
+            <td class="customer-actions">
+                <button class="action-btn edit-btn" onclick="editCustomer('${customer.id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn delete-btn" onclick="deleteCustomer('${customer.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
     `).join('');
 }
 
-// Show customer details in modal
-function showCustomerDetails(customerId) {
-    const customer = {
-        id: customerId,
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-        phone: '+91 98765 43210',
-        address: '123 Main St, Mumbai, India',
-        orders: 15,
-        totalSpent: 25000,
-        lastOrder: new Date().toISOString(),
-        avatar: 'https://i.pravatar.cc/150?img=1'
-    };
-    
-    const modal = document.getElementById('customerModal');
-    const modalContent = modal.querySelector('.customer-details');
-    
-    modalContent.innerHTML = `
-        <div class="customer-profile">
-            <img src="${customer.avatar}" alt="${customer.name}" class="customer-avatar">
-            <h2>${customer.name}</h2>
-            <p>${customer.email}</p>
-            <p>${customer.phone}</p>
-            <p>${customer.address}</p>
-        </div>
-        <div class="customer-stats-detailed">
-            <div class="stat">
-                <h3>Total Orders</h3>
-                <p>${customer.orders}</p>
-            </div>
-            <div class="stat">
-                <h3>Total Spent</h3>
-                <p>₹${customer.totalSpent.toFixed(2)}</p>
-            </div>
-            <div class="stat">
-                <h3>Last Order</h3>
-                <p>${new Date(customer.lastOrder).toLocaleDateString()}</p>
-            </div>
-        </div>
-        <div class="customer-actions">
-            <button class="edit-btn">
-                <i class="fas fa-edit"></i> Edit
-            </button>
-            <button class="contact-btn">
-                <i class="fas fa-envelope"></i> Contact
-            </button>
-        </div>
-    `;
-    
+// Format date
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+}
+
+// Search functionality
+document.getElementById('searchCustomers').addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const filteredCustomers = customers.filter(customer => 
+        customer.name.toLowerCase().includes(searchTerm) ||
+        customer.email.toLowerCase().includes(searchTerm) ||
+        customer.id.toLowerCase().includes(searchTerm)
+    );
+    populateCustomersTable(filteredCustomers);
+});
+
+// Modal functions
+const modal = document.getElementById('customerModal');
+let currentCustomerId = null;
+
+function openModal() {
     modal.style.display = 'block';
 }
 
-// Search customers
-document.getElementById('searchCustomers').addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const customers = document.querySelectorAll('.customer-card');
+function closeModal() {
+    modal.style.display = 'none';
+    currentCustomerId = null;
+    document.getElementById('customerForm').reset();
+}
+
+// Edit customer
+function editCustomer(customerId) {
+    const customer = customers.find(c => c.id === customerId);
+    if (customer) {
+        currentCustomerId = customerId;
+        document.getElementById('customerName').value = customer.name;
+        document.getElementById('customerEmail').value = customer.email;
+        document.getElementById('customerPhone').value = customer.phone || '';
+        openModal();
+    }
+}
+
+// Delete customer
+function deleteCustomer(customerId) {
+    if (confirm('Are you sure you want to delete this customer?')) {
+        const index = customers.findIndex(c => c.id === customerId);
+        if (index !== -1) {
+            customers.splice(index, 1);
+            populateCustomersTable(customers);
+        }
+    }
+}
+
+// Handle form submission
+document.getElementById('customerForm').addEventListener('submit', (e) => {
+    e.preventDefault();
     
-    customers.forEach(customer => {
-        const name = customer.querySelector('h3').textContent.toLowerCase();
-        const email = customer.querySelector('.customer-email').textContent.toLowerCase();
-        customer.style.display = (name.includes(searchTerm) || email.includes(searchTerm)) ? 'block' : 'none';
-    });
+    if (currentCustomerId) {
+        const customerIndex = customers.findIndex(c => c.id === currentCustomerId);
+        if (customerIndex !== -1) {
+            customers[customerIndex] = {
+                ...customers[customerIndex],
+                name: document.getElementById('customerName').value,
+                email: document.getElementById('customerEmail').value,
+                phone: document.getElementById('customerPhone').value
+            };
+            populateCustomersTable(customers);
+            closeModal();
+        }
+    }
 });
 
-// Close modal
-document.querySelector('.close-modal').addEventListener('click', () => {
-    document.getElementById('customerModal').style.display = 'none';
-});
+// Close modal when clicking outside
+window.onclick = (event) => {
+    if (event.target === modal) {
+        closeModal();
+    }
+};
 
-// Initialize
-fetchCustomers();
-// Refresh data every 30 seconds
-setInterval(fetchCustomers, 30000);
+// Initialize table
+populateCustomersTable(customers);

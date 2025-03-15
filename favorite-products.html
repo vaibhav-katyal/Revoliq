@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Products - Revoliq SmartCart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="customer-dashboard.css">
+    <style>
+        /* Favorites Page Specific Styles */
+        .favorites-content {
+            padding: 1rem;
+        }
+
+        /* Favorites Header */
+        .favorites-header {
+            background: linear-gradient(145deg, var(--primary), var(--primary-light));
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-text h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-text p {
+            opacity: 0.9;
+        }
+
+        .create-list-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .create-list-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Categories */
+        .favorites-categories {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .favorites-categories::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .favorites-categories::-webkit-scrollbar-track {
+            background: var(--background);
+            border-radius: 2px;
+        }
+
+        .favorites-categories::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .category-btn {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .category-btn i {
+            font-size: 1.25rem;
+        }
+
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .category-btn:hover:not(.active) {
+            background: var(--background);
+            transform: translateY(-2px);
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .product-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .favorite-btn i {
+            color: var(--danger);
+            font-size: 1.25rem;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-category {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .add-to-list-btn,
+        .quick-add-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .add-to-list-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .add-to-list-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .quick-add-btn {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .quick-add-btn:hover {
+            background: var(--background);
+        }
+
+        /* Shopping Lists */
+        .shopping-lists {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .view-all-btn {
+            color: var(--accent);
+            background: none;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .lists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .list-card {
+            background: var(--background);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .list-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .list-title {
+            color: var(--primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .list-date {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .list-description {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .list-items {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .list-items::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .list-items::-webkit-scrollbar-track {
+            background: white;
+            border-radius: 2px;
+        }
+
+        .list-items::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .item-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .item-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .items-count {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .list-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .edit-list-btn,
+        .share-list-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .edit-list-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .edit-list-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .share-list-btn {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .share-list-btn:hover {
+            background: var(--background);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .product-selector {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .create-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .create-btn:hover {
+            background: var(--primary-light);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .lists-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Include your existing sidebar here -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Revoliq</span>
+            </div>
+            <div class="user-profile">
+                <div class="avatar">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100" alt="User Avatar">
+                </div>
+                <div class="user-info">
+                    <h3>John Doe</h3>
+                    <p>Premium Member</p>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a href="customer-dashboard.html" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="customer-profile.html" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+                <a href="customer-carts.html" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>My Carts</span>
+                </a>
+                <a href="customer-orders.html" class="nav-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Order History</span>
+                </a>
+                <a href="customer-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Shopping Analytics</span>
+                </a>
+                <a href="favorite-products.html" class="nav-item">
+                    <i class="fas fa-heart"></i>
+                    <span>Favorite Products</span>
+                </a>
+                <a href="#" class="nav-item logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search products, orders, carts...">
+                </div>
+                <div class="top-bar-actions">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="scan-cart-btn">
+                        <i class="fas fa-qrcode"></i>
+                        Scan Cart
+                    </button>
+                </div>
+            </header>
+
+            <div class="favorites-content">
+                <!-- Favorites Header -->
+                <section class="favorites-header">
+                    <div class="header-content">
+                        <div class="header-text">
+                            <h1>Your Favorite Products</h1>
+                            <p>Manage your favorite items and create shopping lists</p>
+                        </div>
+                        <button class="create-list-btn">
+                            <i class="fas fa-plus"></i>
+                            Create Shopping List
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Favorites Categories -->
+                <section class="favorites-categories">
+                    <button class="category-btn active" data-category="all">
+                        <i class="fas fa-border-all"></i>
+                        All Items
+                    </button>
+                    <button class="category-btn" data-category="groceries">
+                        <i class="fas fa-apple-alt"></i>
+                        Groceries
+                    </button>
+                    <button class="category-btn" data-category="electronics">
+                        <i class="fas fa-laptop"></i>
+                        Electronics
+                    </button>
+                    <button class="category-btn" data-category="fashion">
+                        <i class="fas fa-tshirt"></i>
+                        Fashion
+                    </button>
+                    <button class="category-btn" data-category="home">
+                        <i class="fas fa-home"></i>
+                        Home
+                    </button>
+                </section>
+
+                <!-- Products Grid -->
+                <section class="products-grid">
+                    <!-- Products will be populated by JavaScript -->
+                </section>
+
+                <!-- Shopping Lists -->
+                <section class="shopping-lists">
+                    <div class="section-header">
+                        <h2>Your Shopping Lists</h2>
+                        <button class="view-all-btn">View All Lists</button>
+                    </div>
+                    <div class="lists-grid">
+                        <!-- Lists will be populated by JavaScript -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create List Modal -->
+    <div class="modal" id="createListModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Shopping List</h2>
+                <button class="close-modal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="createListForm">
+                    <div class="form-group">
+                        <label>List Name</label>
+                        <input type="text" placeholder="Enter list name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea placeholder="Enter list description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Products</label>
+                        <div class="product-selector">
+                            <!-- Products will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <button type="submit" class="create-btn">Create List</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="favorite-products.js"></script>
+</body>
+
+</html>

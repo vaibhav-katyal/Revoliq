@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Carts - Revoliq SmartCart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="customer-dashboard.css">
+    <style>
+        /* Cart Page Specific Styles */
+        .carts-content {
+            padding: 1rem;
+        }
+
+        /* Active Cart Styles */
+        .active-cart {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .cart-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .cart-status.connected {
+            background: rgba(0, 184, 148, 0.1);
+            color: var(--success);
+        }
+
+        .cart-status.disconnected {
+            background: rgba(214, 48, 49, 0.1);
+            color: var(--danger);
+        }
+
+        .active-cart-details {
+            background: var(--background);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cart-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .cart-id h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .store-location {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .cart-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat span {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .view-items-btn,
+        .end-session-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-items-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .view-items-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .end-session-btn {
+            background: white;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .end-session-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Cart Items List */
+        .cart-items-list {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .cart-items-list.hidden {
+            display: none;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .item-card {
+            background: var(--background);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .item-image {
+            height: 150px;
+            overflow: hidden;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-details {
+            padding: 1rem;
+        }
+
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .item-price {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .item-quantity {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        /* Cart History */
+        .cart-history {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .history-filter select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .history-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .history-card {
+            background: var(--background);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .history-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .history-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .history-card-date {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .history-card-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-label {
+            color: var(--text-light);
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        /* Cart Analytics */
+        .cart-analytics {
+            margin-top: 2rem;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .analytics-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            height: auto;
+            max-height: 400px;
+            overflow: hidden;
+        }
+
+        #shoppingPatternChart {
+            width: 100%;
+            height: 300px;
+        }
+
+        /* Fix for chart height */
+        #shoppingPatternChart {
+            height: 300px;
+            width: 100%;
+            max-height: 300px;
+        }
+
+        .analytics-card h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .store-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .store-stat {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .store-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--background);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .store-info {
+            flex: 1;
+        }
+
+        .store-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .store-visits {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--background);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 1200px) {
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cart-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+
+            .cart-stats {
+                justify-content: center;
+            }
+
+            .cart-actions {
+                flex-direction: column;
+            }
+
+            .history-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Include your existing sidebar here -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Revoliq</span>
+            </div>
+            <div class="user-profile">
+                <div class="avatar">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100" alt="User Avatar">
+                </div>
+                <div class="user-info">
+                    <h3>John Doe</h3>
+                    <p>Premium Member</p>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a href="customer-dashboard.html" class="nav-item ">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="customer-profile.html" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+                <a href="customer-carts.html" class="nav-item active">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>My Carts</span>
+                </a>
+                <a href="customer-orders.html" class="nav-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Order History</span>
+                </a>
+                <a href="customer-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Shopping Analytics</span>
+                </a>
+                <a href="favorite-products.html" class="nav-item">
+                    <i class="fas fa-heart"></i>
+                    <span>Favorite Products</span>
+                </a>
+                <a href="#" class="nav-item logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <!-- Your existing top bar code -->
+            </header>
+
+            <div class="carts-content">
+                <!-- Active Cart Section -->
+                <section class="active-cart">
+                    <div class="section-header">
+                        <h2>Currently Active Cart</h2>
+                        <div class="cart-status connected">
+                            <i class="fas fa-wifi"></i>
+                            Connected
+                        </div>
+                    </div>
+
+                    <div class="active-cart-details">
+                        <div class="cart-info">
+                            <div class="cart-id">
+                                <h3>Cart #12345</h3>
+                                <span class="store-location">Store: Mumbai Central</span>
+                            </div>
+                            <div class="cart-stats">
+                                <div class="stat">
+                                    <i class="fas fa-clock"></i>
+                                    <span>25 mins</span>
+                                    <label>Shopping Time</label>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-shopping-basket"></i>
+                                    <span>12 items</span>
+                                    <label>In Cart</label>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-rupee-sign"></i>
+                                    <span>₹2,450</span>
+                                    <label>Total Value</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cart-actions">
+                            <button class="view-items-btn">
+                                <i class="fas fa-eye"></i>
+                                View Items
+                            </button>
+                            <button class="end-session-btn">
+                                <i class="fas fa-power-off"></i>
+                                End Session
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="cart-items-list hidden">
+                        <h3>Items in Cart</h3>
+                        <div class="items-grid">
+                            <!-- Items will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Cart History -->
+                <section class="cart-history">
+                    <div class="section-header">
+                        <h2>Recent Cart History</h2>
+                        <div class="history-filter">
+                            <select id="timeFilter">
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                                <option value="year">This Year</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="history-cards">
+                        <!-- Cart history cards will be populated by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- Cart Analytics -->
+                <section class="cart-analytics">
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h3>Shopping Patterns</h3>
+                            <canvas id="shoppingPatternChart"></canvas>
+                        </div>
+                        <div class="analytics-card">
+                            <h3>Popular Store Locations</h3>
+                            <div class="store-stats">
+                                <!-- Store statistics will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="customer-carts.js"></script>
+</body>
+
+</html>

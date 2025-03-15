@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Revoliq SmartCart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="customer-dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Revoliq</span>
+            </div>
+            <div class="user-profile">
+                <div class="avatar">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100" alt="User Avatar">
+                </div>
+                <div class="user-info">
+                    <h3>John Doe</h3>
+                    <p>Premium Member</p>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a href="customer-dashboard.html" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="customer-profile.html" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+                <a href="customer-carts.html" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>My Carts</span>
+                </a>
+                <a href="customer-orders.html" class="nav-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Order History</span>
+                </a>
+                <a href="customer-analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Shopping Analytics</span>
+                </a>
+                <a href="favorite-products.html" class="nav-item">
+                    <i class="fas fa-heart"></i>
+                    <span>Favorite Products</span>
+                </a>
+                <a href="#" class="nav-item logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search products, orders, carts...">
+                </div>
+                <div class="top-bar-actions">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="scan-cart-btn">
+                        <i class="fas fa-qrcode"></i>
+                        Scan Cart
+                    </button>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <!-- Welcome Section -->
+                <section class="welcome-section">
+                    <div class="welcome-card">
+                        <div class="welcome-text">
+                            <h1>Welcome back, John! 👋</h1>
+                            <p>Track your shopping journey and manage your smart carts</p>
+                        </div>
+                        <div class="quick-actions">
+                            <button class="action-btn">
+                                <i class="fas fa-qrcode"></i>
+                                Scan New Cart
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-history"></i>
+                                View History
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Stats Grid -->
+                <section class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Carts Used</h3>
+                            <p class="stat-value">24</p>
+                            <span class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i> 12% this month
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Spent</h3>
+                            <p class="stat-value">₹12,450</p>
+                            <span class="stat-trend negative">
+                                <i class="fas fa-arrow-down"></i> 3% this month
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Avg. Shopping Time</h3>
+                            <p class="stat-value">32 mins</p>
+                            <span class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i> 5% faster
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Rewards Points</h3>
+                            <p class="stat-value">2,450</p>
+                            <span class="stat-trend positive">
+                                <i class="fas fa-arrow-up"></i> 250 this month
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recent Activity & Spending Chart -->
+                <div class="dashboard-grid">
+                    <section class="recent-activity">
+                        <div class="section-header">
+                            <h2>Recent Activity</h2>
+                            <button class="view-all-btn">View All</button>
+                        </div>
+                        <div class="activity-list">
+                            <!-- Activity items will be dynamically added here -->
+                        </div>
+                    </section>
+
+                    <section class="spending-chart">
+                        <div class="section-header">
+                            <h2>Shopping Analytics</h2>
+                            <div class="chart-controls">
+                                <button class="chart-period active">Week</button>
+                                <button class="chart-period">Month</button>
+                                <button class="chart-period">Year</button>
+                            </div>
+                        </div>
+                        <canvas id="spendingChart"></canvas>
+                    </section>
+                </div>
+
+                <!-- Frequently Bought Items -->
+                <section class="frequent-items">
+                    <div class="section-header">
+                        <h2>Frequently Bought Items</h2>
+                        <button class="view-all-btn">View All</button>
+                    </div>
+                    <div class="items-grid">
+                        <!-- Product cards will be dynamically added here -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="customer-dashboard.js"></script>
+</body>
+</html>
