@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>REVOLIQ - Smart Cart Scanner</title>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8" defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
@@ -141,6 +141,15 @@
             50% { transform: translate(25%, 25%); }
             100% { transform: translate(-25%, -25%); }
         }
+
+        /* Hide default HTML5 QR reader select camera UI */
+        #qr-reader select {
+            display: none !important;
+        }
+
+        #qr-reader__status_span {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -161,54 +170,83 @@
     </div>
 
     <script>
-        let scanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
+        // Wait for the HTML5QrcodeScanner library to load
+        window.addEventListener('load', function() {
+            let scanner = null;
+            const startButton = document.getElementById("start-button");
+            const retryButton = document.getElementById("retry-button");
+            const cartButton = document.getElementById("cart-button");
+            const resultElement = document.getElementById("result");
 
-        document.getElementById("start-button").addEventListener("click", function() {
-            scanner.render(onScanSuccess);
-            document.getElementById("start-button").disabled = true;
-            document.getElementById("retry-button").disabled = false;
-            document.getElementById("result").innerText = "Scanning...";
-        });
-
-        document.getElementById("retry-button").addEventListener("click", function() {
-            document.getElementById("result").innerText = "Scan a QR code to proceed";
-            scanner.clear();
-            scanner.render(onScanSuccess);
-        });
-
-        document.getElementById("cart-button").addEventListener("click", function() {
-            window.location.href = "scanned-products.html";
-        });
-
-        function onScanSuccess(decodedText) {
-            try {
-                const cartData = JSON.parse(decodedText);
-                
-                fetch("http://localhost:5000/api/qr/scan", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(cartData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById("result").innerHTML = `<span class="success-message">QR Code Scanned ✅</span>`;
-                        setTimeout(() => {
-                            window.location.href = `/cart-success.html?cartId=${data.cartId}`;
-                        }, 1500);
-                    } else {
-                        document.getElementById("result").innerHTML = `<span class="error-message">Invalid QR Code ❌</span>`;
-                    }
-                })
-                .catch(error => {
-                    console.error("Error scanning QR:", error);
-                    document.getElementById("result").innerHTML = `<span class="error-message">Scan failed. Try again! ❌</span>`;
-                });
-            } catch (error) {
-                console.error("Error parsing QR code:", error);
-                document.getElementById("result").innerHTML = `<span class="error-message">Invalid QR Code format ❌</span>`;
+            function onScanSuccess(decodedText) {
+                try {
+                    const cartData = JSON.parse(decodedText);
+                    cartData.userId = "your-user-id"; // Replace with actual user ID
+                    
+                    fetch("http://localhost:5000/api/qr/scan", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(cartData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            resultElement.innerHTML = `<span class="success-message">QR Code Scanned ✅</span>`;
+                            setTimeout(() => {
+                                window.location.href = `cart-success.html?cartId=${data.cartId}`;
+                            }, 1500);
+                        } else {
+                            resultElement.innerHTML = `<span class="error-message">Invalid QR Code ❌</span>`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error scanning QR:", error);
+                        resultElement.innerHTML = `<span class="error-message">Scan failed. Try again! ❌</span>`;
+                    });
+                } catch (error) {
+                    console.error("Error parsing QR code:", error);
+                    resultElement.innerHTML = `<span class="error-message">Invalid QR Code format ❌</span>`;
+                }
             }
-        }
+
+            function onScanError(error) {
+                console.warn(`QR error = ${error}`);
+            }
+
+            startButton.addEventListener("click", function() {
+                if (typeof Html5QrcodeScanner === "undefined") {
+                    console.error("Html5QrcodeScanner is not defined.");
+                    resultElement.innerHTML = `<span class="error-message">QR scanner not available. Please try again later.</span>`;
+                    return;
+                }
+
+                if (!scanner) {
+                    scanner = new Html5QrcodeScanner("qr-reader", {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 },
+                        aspectRatio: 1.0,
+                        showTorchButtonIfSupported: true,
+                    });
+                }
+
+                scanner.render(onScanSuccess, onScanError);
+                startButton.disabled = true;
+                retryButton.disabled = false;
+                resultElement.innerText = "Scanning...";
+            });
+
+            retryButton.addEventListener("click", function() {
+                if (scanner) {
+                    scanner.clear();
+                    scanner.render(onScanSuccess, onScanError);
+                    resultElement.innerText = "Scan a QR code to proceed";
+                }
+            });
+
+            cartButton.addEventListener("click", function() {
+                window.location.href = "scanned-products.html";
+            });
+        });
     </script>
 </body>
 </html>

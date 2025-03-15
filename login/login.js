@@ -97,6 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+
+  
   // 🚀 Sign-Up Function
   signUpForm.addEventListener("submit", async (event) => {
     event.preventDefault()
@@ -119,7 +121,47 @@ document.addEventListener("DOMContentLoaded", () => {
     clearError("signUpEmail")
     clearError("signUpPassword")
     clearError("storeName")
-
+    try {
+      console.log("Attempting to create user with email:", email);
+  
+      // Step 1: Create user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("✅ User created in Firebase:", userCredential.user.uid);
+  
+      // Step 2: Send user data to MongoDB
+      const userData = {
+          uid: userCredential.user.uid,
+          email: userCredential.user.email,
+          name: name,
+          userType: userType,
+          storeName: userType === "retailer" ? storeName : null
+      };
+  
+      console.log("📡 Sending user data to MongoDB...");
+      const response = await fetch("http://localhost:5000/api/storeUser", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData)
+      });
+  
+      const result = await response.json();
+      if (!result.success) {
+          console.error("❌ Error saving user in MongoDB:", result.message);
+          alert("Failed to save user in MongoDB: " + result.message);
+          return;
+      }
+  
+      console.log("✅ User successfully stored in MongoDB!");
+      alert("Sign-up successful! Please sign in.");
+      
+      // Redirect only after MongoDB confirmation
+      container.classList.remove("right-panel-active");
+  } catch (error) {
+      console.error("❌ Signup error:", error.message);
+      alert(`Signup failed: ${error.message}`);
+  }
+  
+  
     // Validate name
     if (name === "") {
       showError("signUpName", "Please enter your name")
@@ -215,7 +257,30 @@ document.addEventListener("DOMContentLoaded", () => {
     // Clear previous errors
     clearError("signInEmail")
     clearError("signInPassword")
-
+    try {
+      console.log("Signing in user with email:", email);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("User signed in successfully:", userCredential.user.uid);
+  
+      // Fetch user data from MongoDB
+      const response = await fetch(`http://localhost:5000/api/getUser/${userCredential.user.uid}`);
+      const userData = await response.json();
+  
+      if (!userData.success) {
+          alert("User not found in MongoDB! Please sign up again.");
+          return;
+      }
+  
+      console.log("MongoDB User Data:", userData.user);
+      alert("Login Successful!");
+      
+      // Redirect user based on their type
+      window.location.href = userData.user.userType === "retailer" ? "/retailer-dashboard.html" : "/customer-dashboard.html";
+  } catch (error) {
+      console.error("Sign-in error:", error.message);
+      alert(`Sign-in failed: ${error.message}`);
+  }
+  
     // Validate email
     if (email === "") {
       showError("signInEmail", "Please enter your email")
