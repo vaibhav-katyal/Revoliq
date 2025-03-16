@@ -179,35 +179,46 @@
             const resultElement = document.getElementById("result");
 
             function onScanSuccess(decodedText) {
-                try {
-                    const cartData = JSON.parse(decodedText);
-                    cartData.userId = "your-user-id"; // Replace with actual user ID
-                    
-                    fetch("http://localhost:5000/api/qr/scan", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(cartData)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            resultElement.innerHTML = `<span class="success-message">QR Code Scanned ✅</span>`;
-                            setTimeout(() => {
-                                window.location.href = `cart-success.html?cartId=${data.cartId}`;
-                            }, 1500);
-                        } else {
-                            resultElement.innerHTML = `<span class="error-message">Invalid QR Code ❌</span>`;
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error scanning QR:", error);
-                        resultElement.innerHTML = `<span class="error-message">Scan failed. Try again! ❌</span>`;
-                    });
-                } catch (error) {
-                    console.error("Error parsing QR code:", error);
-                    resultElement.innerHTML = `<span class="error-message">Invalid QR Code format ❌</span>`;
-                }
+    try {
+        const cartData = JSON.parse(decodedText);
+
+        // Get the logged-in user
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (!user) {
+            alert("No user found! Redirecting to login...");
+            window.location.href = "/Revoliq/login.html";
+            return;
+        }
+
+        cartData.userId = user.uid; // Attach the logged-in user ID
+
+        fetch("http://localhost:5000/api/qr/scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(cartData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                resultElement.innerHTML = `<span class="success-message">Cart Linked Successfully ✅</span>`;
+                setTimeout(() => {
+                    window.location.href = `QR.html?cartId=${data.cartId}`;
+                }, 1500);
+            } else {
+                resultElement.innerHTML = `<span class="error-message">Invalid QR Code ❌</span>`;
             }
+        })
+        .catch(error => {
+            console.error("Error scanning QR:", error);
+            resultElement.innerHTML = `<span class="error-message">Scan failed. Try again! ❌</span>`;
+        });
+    } catch (error) {
+        console.error("Error parsing QR code:", error);
+        resultElement.innerHTML = `<span class="error-message">Invalid QR Code format ❌</span>`;
+    }
+}
+
 
             function onScanError(error) {
                 console.warn(`QR error = ${error}`);

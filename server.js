@@ -94,6 +94,7 @@ app.get('/api/getUser/:uid', async (req, res) => {
     }
 });
 
+
 // Cart Schema
 const cartSchema = new mongoose.Schema({
     cartId: { type: String, required: true, unique: true },
@@ -177,10 +178,15 @@ app.post('/cart/add', async (req, res) => {
 // Scan QR code and verify cart
 app.post('/api/qr/scan', async (req, res) => {
     try {
-        const { cartId, retailerId } = req.body;
+        const { cartId, retailerId, userId } = req.body;
 
-        // Find cart in database
-        const cart = await Cart.findOne({ cartId, retailerId });
+        // Ensure all required fields are present
+        if (!cartId || !retailerId || !userId) {
+            return res.status(400).json({ message: "Missing cartId, retailerId, or userId" });
+        }
+
+        // Check if cart exists and is active
+        let cart = await Cart.findOne({ cartId, retailerId });
 
         if (!cart) {
             return res.status(404).json({ message: "Invalid cart" });
@@ -190,20 +196,17 @@ app.post('/api/qr/scan', async (req, res) => {
             return res.status(400).json({ message: "Cart is inactive" });
         }
 
-        // Add to scanned carts collection
-        const scannedCart = new ScannedCart({
-            cartId: cart.cartId,
-            retailerId: cart.retailerId
-        });
-        await scannedCart.save();
+        // Ensure cart is assigned to the correct user
+        cart.userId = userId;
+        await cart.save();
 
         res.status(200).json({
             success: true,
-            message: "Cart verified successfully!",
+            message: "Cart linked successfully!",
             cartId: cart.cartId
         });
     } catch (error) {
-        res.status(500).json({ message: "Error verifying cart", error });
+        res.status(500).json({ message: "Error linking cart", error });
     }
 });
 
@@ -247,39 +250,48 @@ app.get('/products/find/:barcode', async (req, res) => {
 // Scan and add to cart
 app.post('/scan', async (req, res) => {
     try {
-        const { barcode } = req.body;
-        
-        // Find product in Added_Pdts collection
-        const addedProduct = await AddedProduct.findOne({ barcode });
-        
-        if (!addedProduct) {
+        const { barcode, userId } = req.body;
+
+        if (!barcode || !userId) {
+            return res.status(400).json({ message: "Missing barcode or userId" });
+        }
+
+        // Find the active cart for this user
+        let cart = await Cart.findOne({ userId, active: true });
+
+        if (!cart) {
+            return res.status(404).json({ message: "No active cart found for this user" });
+        }
+
+        // Find product details
+        let product = await AddedProduct.findOne({ barcode });
+
+        if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
 
-        // Check if product already exists in Products collection
-        let product = await Product.findOne({ id: barcode });
-        
-        if (product) {
-            // Update existing product quantity
-            product.quantity += 1;
+        // Check if product is already in the user's cart
+        let cartProduct = cart.products.find(p => p.productId === barcode);
+
+        if (cartProduct) {
+            cartProduct.quantity += 1; // Increase quantity if already exists
         } else {
-            // Create new product
-            product = new Product({
-                id: barcode,
-                name: addedProduct.name,
-                price: addedProduct.price,
-                image: addedProduct.image,
-                quantity: 1,
-                scannedAt: new Date()
+            cart.products.push({
+                productId: barcode,
+                name: product.name,
+                price: product.price,
+                quantity: 1
             });
         }
-        
-        await product.save();
-        res.status(201).json({ message: "Product scanned and added!", product });
+
+        await cart.save();
+
+        res.status(201).json({ message: "Product added to your cart!", cart });
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
     }
 });
+
 
 // Fetch all products
 app.get('/products', async (req, res) => {

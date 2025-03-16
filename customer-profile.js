@@ -131,3 +131,27 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.head.appendChild(style);
 });
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+        alert("No user found! Redirecting to login...");
+        window.location.href = "/Revoliq/login.html";
+        return;
+    }
+
+    console.log("User data loaded:", user);
+
+    // Update profile details
+    document.querySelector(".profile-details h1").textContent = user.name || "Customer";
+    document.querySelector(".profile-avatar img").src = user.profileImage || "default-avatar.jpg";
+    
+    // Update input fields
+    document.querySelector(".user-info h3").textContent = user.name || "Customer"; // Sidebar Name
+    document.querySelector(".profile-details h1").textContent = user.name || "Customer"; // Profile Page Name
+    document.querySelector('.info-form input[type="text"]').value = user.name || ""; // Input Field Name
+    document.querySelector('.info-form input[type="email"]').value = user.email || ""; // Input Field Email
+});

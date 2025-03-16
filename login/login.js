@@ -261,21 +261,28 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("Signing in user with email:", email);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("User signed in successfully:", userCredential.user.uid);
-  
+
       // Fetch user data from MongoDB
       const response = await fetch(`http://localhost:5000/api/getUser/${userCredential.user.uid}`);
       const userData = await response.json();
-  
+
       if (!userData.success) {
           alert("User not found in MongoDB! Please sign up again.");
           return;
       }
-  
+
       console.log("MongoDB User Data:", userData.user);
+
+      // Store user data in localStorage
+      localStorage.setItem("user", JSON.stringify(userData.user));
+
       alert("Login Successful!");
-      
-      // Redirect user based on their type
-      window.location.href = userData.user.userType === "retailer" ? "/retailer-dashboard.html" : "/customer-dashboard.html";
+
+      // Redirect based on user type
+      window.location.href = userData.user.userType === "retailer" 
+          ? "/Revoliq/ret_dash.html" 
+          : "/Revoliq/customer-profile.html";
+          
   } catch (error) {
       console.error("Sign-in error:", error.message);
       alert(`Sign-in failed: ${error.message}`);
