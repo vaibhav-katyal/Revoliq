@@ -10,6 +10,29 @@
 </head>
 <body>
     <div class="dashboard-container">
+        <!-- Profile Button -->
+<div class="profile-button" id="profileButton">
+    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde" alt="User Avatar" class="profile-icon">
+    <span>Profile</span>
+</div>
+
+<!-- Profile Popup -->
+<div class="profile-popup" id="profilePopup">
+    <div class="popup-content">
+        <span class="close-popup" id="closePopup">&times;</span>
+        <div class="profile-header">
+            <img id="popupAvatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde" alt="Profile Avatar">
+            <h2 id="popupName">Retailer Name</h2>
+            <p class="premium-badge"><i class="fas fa-crown"></i> Premium Retailer</p>
+        </div>
+        <div class="profile-info">
+            <p><i class="fas fa-envelope"></i> <span id="popupEmail">Email</span></p>
+            <p><i class="fas fa-store"></i> <span id="popupStoreName">Store Name</span></p>
+            <p><i class="fas fa-calendar-alt"></i> Member Since <span id="popupMemberSince">2024</span></p>
+        </div>
+    </div>
+</div>
+
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
@@ -48,6 +71,9 @@
                 </div>
             </nav>
         </aside>
+        <!-- Retailer Profile Section -->
+
+
 
         <!-- Main Content -->
         <main class="main-content">

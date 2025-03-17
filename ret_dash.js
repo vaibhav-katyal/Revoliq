@@ -17,6 +17,44 @@ async function fetchData() {
     }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || user.userType !== "retailer") {
+        alert("Unauthorized access! Redirecting to login...");
+        window.location.href = "/Revoliq/login.html";
+        return;
+    }
+
+    console.log("Retailer data loaded:", user);
+
+    // Update profile button and popup with retailer details
+    document.querySelector(".profile-icon").src = user.profileImage || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde";
+    document.getElementById("popupAvatar").src = user.profileImage || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde";
+    document.getElementById("popupName").textContent = user.name || "Retailer Name";
+    document.getElementById("popupEmail").textContent = user.email || "Email not available";
+    document.getElementById("popupStoreName").textContent = user.storeName || "Store not specified";
+    document.getElementById("popupMemberSince").textContent = user.createdAt ? new Date(user.createdAt).getFullYear() : "2024";
+
+    // Show popup on click
+    document.getElementById("profileButton").addEventListener("click", () => {
+        document.getElementById("profilePopup").style.display = "block";
+    });
+
+    // Close popup
+    document.getElementById("closePopup").addEventListener("click", () => {
+        document.getElementById("profilePopup").style.display = "none";
+    });
+
+    // Close popup when clicking outside
+    window.addEventListener("click", (event) => {
+        if (event.target === document.getElementById("profilePopup")) {
+            document.getElementById("profilePopup").style.display = "none";
+        }
+    });
+});
+
+
 // Update dashboard statistics
 function updateDashboardStats(products) {
     const todayRevenue = products.reduce((sum, product) => sum + product.price, 0);
