@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
   
       console.log("📡 Sending user data to MongoDB...");
-      const response = await fetch("http://localhost:5000/api/storeUser", {
+      const response = await fetch("https://revoliq.onrender.com/api/storeUser", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(userData)
@@ -263,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("User signed in successfully:", userCredential.user.uid);
 
       // Fetch user data from MongoDB
-      const response = await fetch(`http://localhost:5000/api/getUser/${userCredential.user.uid}`);
+      const response = await fetch(`https://revoliq.onrender.com/api/getUser/${userCredential.user.uid}`);
       const userData = await response.json();
 
       if (!userData.success) {

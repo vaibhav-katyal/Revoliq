@@ -35,7 +35,7 @@
     </table>
 
     <script>
-        fetch("http://localhost:5000/scanned-carts")
+        fetch("https://revoliq.onrender.com/scanned-carts")
         .then(res => res.json())
         .then(carts => {
             document.getElementById("scanned-carts-body").innerHTML = carts.map(cart => `

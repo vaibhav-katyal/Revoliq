@@ -1,5 +1,5 @@
 // API Base URL
-const API_URL = 'http://localhost:5000';
+const API_URL = 'https://revoliq.onrender.com';
 
 // Fetch and display products
 async function fetchProducts() {

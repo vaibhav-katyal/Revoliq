@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch products as orders from server
     async function fetchOrders() {
         try {
-            const response = await fetch(`http://localhost:5000/api/products/orders/${user.uid}`);
+            const response = await fetch(`https://revoliq.onrender.com/api/products/orders/${user.uid}`);
             const orders = await response.json();
             populateOrders(orders);
             updateOrderStats(orders);
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show order details modal
     window.showOrderDetails = async (orderId) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/product/detail/${orderId}`);
+            const response = await fetch(`https://revoliq.onrender.com/api/product/detail/${orderId}`);
             const product = await response.json();
             
             const modal = document.getElementById('orderDetailsModal');
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function filterOrders() {
         try {
-            const response = await fetch(`http://localhost:5000/api/products/orders/${user.uid}`);
+            const response = await fetch(`https://revoliq.onrender.com/api/products/orders/${user.uid}`);
             let orders = await response.json();
             
             const searchTerm = searchInput.value.toLowerCase();

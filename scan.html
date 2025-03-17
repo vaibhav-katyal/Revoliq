@@ -193,7 +193,7 @@
 
         cartData.userId = user.uid; // Attach the logged-in user ID
 
-        fetch("http://localhost:5000/api/qr/scan", {
+        fetch("https://revoliq.onrender.com/api/qr/scan", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(cartData)

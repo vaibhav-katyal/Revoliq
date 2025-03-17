@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch and display cart history
     async function fetchCartHistory() {
         try {
-            const response = await fetch(`http://localhost:5000/api/cart/history/${user.uid}`);
+            const response = await fetch(`https://revoliq.onrender.com/api/cart/history/${user.uid}`);
             const history = await response.json();
 
             const historyCards = document.querySelector('.history-cards');
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const duration = Math.floor((currentTime - startTime) / 1000); // Duration in seconds
 
                 try {
-                    const response = await fetch('http://localhost:5000/api/cart/end-session', {
+                    const response = await fetch('https://revoliq.onrender.com/api/cart/end-session', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

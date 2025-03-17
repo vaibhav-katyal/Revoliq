@@ -497,7 +497,7 @@
 
     <script>
         function fetchProducts() {
-            fetch('http://localhost:5000/products')
+            fetch('https://revoliq.onrender.com/products')
             .then(response => response.json())
             .then(data => {
                 let productList = document.getElementById("productList");
@@ -554,7 +554,7 @@
                 return;
             }
             const updatedPrice = unitPrice * quantity;
-            fetch(`http://localhost:5000/products/${id}`, {
+            fetch(`https://revoliq.onrender.com/products/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ quantity, price: updatedPrice })
@@ -562,7 +562,7 @@
         }
 
         function removeFromCart(id) {
-            fetch(`http://localhost:5000/products/${id}`, {
+            fetch(`https://revoliq.onrender.com/products/${id}`, {
                 method: 'DELETE'
             }).then(fetchProducts);
         }

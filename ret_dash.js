@@ -1,5 +1,5 @@
 // API Base URL
-const API_URL = 'http://localhost:5000';
+const API_URL = 'https://revoliq.onrender.com';
 
 // Fetch data from server
 async function fetchData() {
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!user || user.userType !== "retailer") {
         alert("Unauthorized access! Redirecting to login...");
-        window.location.href = "/Revoliq/login.html";
+        window.location.href = "/Revoliq/login/login.html";
         return;
     }
 
