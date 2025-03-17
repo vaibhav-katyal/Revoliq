@@ -367,5 +367,70 @@ app.get('/products/added', async (req, res) => {
     }
 });
 
+app.get('/api/products/orders/:userId', async (req, res) => {
+    try {
+        const products = await AddedProduct.find()
+            .sort({ createdAt: -1 });
+        
+        // Transform products into order-like structure
+        const transformedProducts = products.map(product => ({
+            orderId: product._id,
+            date: product.createdAt,
+            name: product.name,
+            total: product.price,
+            status: 'completed' // Default status
+        }));
+        
+        res.json(transformedProducts);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching products", error: error.message });
+    }
+});
+
+// Add this endpoint to fetch single product details
+app.get('/api/product/detail/:id', async (req, res) => {
+    try {
+        const product = await AddedProduct.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        res.json(product);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching product details", error: error.message });
+    }
+});
+
+// Endpoint to end cart session
+// app.post('/api/cart/end-session', async (req, res) => {
+//     try {
+//         const { cartId, userId, duration } = req.body;
+
+//         // Create scanned cart record
+//         const scannedCart = new ScannedCart({
+//             cartId,
+//             retailerId: userId,
+//             duration,
+//             scannedAt: new Date()
+//         });
+//         await scannedCart.save();
+
+//         res.json({ success: true, message: "Cart session ended successfully" });
+//     } catch (error) {
+//         res.status(500).json({ success: false, message: "Error ending cart session", error: error.message });
+//     }
+// });
+
+// Endpoint to get cart history
+app.get('/api/cart/history/:userId', async (req, res) => {
+    try {
+        const scannedCarts = await ScannedCart.find({ retailerId: req.params.userId })
+            .sort({ scannedAt: -1 })
+            .limit(10);
+        res.json(scannedCarts);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching cart history", error: error.message });
+    }
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

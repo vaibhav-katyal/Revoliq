@@ -187,7 +187,7 @@
 
         if (!user) {
             alert("No user found! Redirecting to login...");
-            window.location.href = "/Revoliq/login.html";
+            window.location.href = "/Revoliq/login/login.html";
             return;
         }
 
@@ -203,7 +203,7 @@
             if (data.success) {
                 resultElement.innerHTML = `<span class="success-message">Cart Linked Successfully ✅</span>`;
                 setTimeout(() => {
-                    window.location.href = `QR.html?cartId=${data.cartId}`;
+                    window.location.href = `cart-success.html?cartId=${data.cartId}`;
                 }, 1500);
             } else {
                 resultElement.innerHTML = `<span class="error-message">Invalid QR Code ❌</span>`;

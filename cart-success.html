@@ -21,6 +21,11 @@
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
+        .countdown {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
 
         body {
             min-height: 100vh;
@@ -144,23 +149,33 @@
             Cart #<span id="cartIdText"></span>
         </div>
         
-        <a href="QR.html"><button class="start-shopping">
-            Start Shopping <i class="fas fa-arrow-right"></i>
-        </button></a>
+        <div class="countdown">Redirecting in <span id="timer">3</span> seconds...</div>
     </div>
 
     <script>
-        // Get cart ID from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const cartId = urlParams.get('cartId');
         
         // Display cart ID
         document.getElementById('cartIdText').textContent = cartId;
 
-        // Start shopping function
-        function startShopping() {
-            window.location.href = `/shopping.html?cartId=${cartId}`;
-        }
+        // Store cart start time
+        localStorage.setItem('cartStartTime', new Date().getTime());
+        localStorage.setItem('activeCartId', cartId);
+
+        // Countdown and redirect
+        let countdown = 3;
+        const timerElement = document.getElementById('timer');
+        
+        const timer = setInterval(() => {
+            countdown--;
+            timerElement.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(timer);
+                window.location.href = 'customer-carts.html';
+            }
+        }, 1000);
     </script>
 </body>
 </html>
