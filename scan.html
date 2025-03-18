@@ -262,6 +262,18 @@
             });
         });
 
+        Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+        let backCamera = devices.find(device => device.label.toLowerCase().includes("back"));
+        let cameraId = backCamera ? backCamera.id : devices[0].id; // Default to first if no back camera
+
+        scanner = new Html5Qrcode("qr-reader");
+        scanner.start(cameraId, {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+        }, onScanSuccess, onScanError);
+    }
+}).catch(err => console.error("Camera error:", err));
 
     </script>
 </body>
