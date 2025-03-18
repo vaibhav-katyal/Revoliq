@@ -280,8 +280,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Redirect based on user type
       window.location.href = userData.user.userType === "retailer" 
-          ? "/Revoliq/ret_dash.html" 
-          : "/Revoliq/customer-profile.html";
+          ? "/ret_dash.html" 
+          : "/customer-profile.html";
           
   } catch (error) {
       console.error("Sign-in error:", error.message);
