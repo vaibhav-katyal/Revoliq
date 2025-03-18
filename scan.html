@@ -14,6 +14,30 @@
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
+        .switch-btn { 
+    background: #1976d2; 
+    color: white; 
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.switch-btn:hover {
+    opacity: 0.85;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+    .switch-btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
 
         body {
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
@@ -176,9 +200,12 @@
             const startButton = document.getElementById("start-button");
             const retryButton = document.getElementById("retry-button");
             const cartButton = document.getElementById("cart-button");
-            const switchButton = document.createElement("button"); // Create switch camera button
+            const resultElement = document.getElementById("result");
+    
+            // Create a "Switch Camera" button dynamically and add it to the button container
+            const switchButton = document.createElement("button");
             switchButton.innerText = "Switch Camera";
-            switchButton.classList.add("btn", "scan-btn");
+            switchButton.classList.add("btn", "switch-btn");
             document.querySelector(".btn-container").appendChild(switchButton);
     
             function startScanner(cameraMode) {
@@ -196,28 +223,65 @@
                 Html5Qrcode.getCameras().then(devices => {
                     if (devices.length === 0) {
                         console.error("No cameras found.");
+                        resultElement.innerHTML = `<span style="color: red;">No cameras available.</span>`;
                         return;
                     }
     
-                    let selectedCamera = devices.find(device => 
-                        cameraMode === "environment" ? device.label.toLowerCase().includes("back") 
+                    let selectedCamera = devices.find(device =>
+                        cameraMode === "environment" ? device.label.toLowerCase().includes("back")
                         : device.label.toLowerCase().includes("front")
-                    ) || devices[0]; // Fallback to any camera if not found
+                    ) || devices[0]; // Fallback to first available camera
     
                     scanner = new Html5Qrcode("qr-reader");
                     scanner.start(
-                        selectedCamera.id, 
-                        { fps: 10, qrbox: { width: 250, height: 250 } }, 
-                        onScanSuccess, 
+                        selectedCamera.id,
+                        { fps: 10, qrbox: { width: 250, height: 250 }, showTorchButtonIfSupported: true },
+                        onScanSuccess,
                         onScanError
                     );
+    
+                    startButton.disabled = true;
+                    retryButton.disabled = false;
                 }).catch(err => console.error("Camera error:", err));
             }
     
             function onScanSuccess(decodedText) {
-                console.log("Scanned QR Code:", decodedText);
-                document.getElementById("result").innerHTML = 
-                    `<span class="success-message">QR Code Scanned: ${decodedText}</span>`;
+                try {
+                    const cartData = JSON.parse(decodedText);
+                    const user = JSON.parse(localStorage.getItem("user"));
+    
+                    if (!user) {
+                        alert("No user found! Redirecting to login...");
+                        window.location.href = "/login/login.html";
+                        return;
+                    }
+    
+                    cartData.userId = user.uid; // Attach logged-in user ID
+    
+                    fetch("https://revoliq.onrender.com/api/qr/scan", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(cartData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            resultElement.innerHTML = `<span class="success-message">Cart Linked Successfully ✅</span>`;
+                            setTimeout(() => {
+                                window.location.href = `cart-success.html?cartId=${data.cartId}`;
+                            }, 1500);
+                        } else {
+                            resultElement.innerHTML = `<span class="error-message">Invalid QR Code ❌</span>`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error scanning QR:", error);
+                        resultElement.innerHTML = `<span class="error-message">Scan failed. Try again! ❌</span>`;
+                    });
+                } catch (error) {
+                    console.error("Error parsing QR code:", error);
+                    resultElement.innerHTML = `<span class="error-message">Invalid QR Code format ❌</span>`;
+                }
             }
     
             function onScanError(error) {
@@ -226,8 +290,6 @@
     
             startButton.addEventListener("click", function () {
                 startScanner(currentCamera);
-                startButton.disabled = true;
-                retryButton.disabled = false;
             });
     
             retryButton.addEventListener("click", function () {
@@ -244,6 +306,7 @@
             });
         });
     </script>
+    
     
 </body>
 </html>
