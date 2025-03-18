@@ -170,111 +170,80 @@
     </div>
 
     <script>
-        // Wait for the HTML5QrcodeScanner library to load
-        window.addEventListener('load', function() {
+        window.addEventListener("load", function () {
             let scanner = null;
+            let currentCamera = "environment"; // Default to rear camera
             const startButton = document.getElementById("start-button");
             const retryButton = document.getElementById("retry-button");
             const cartButton = document.getElementById("cart-button");
-            const resultElement = document.getElementById("result");
-
+            const switchButton = document.createElement("button"); // Create switch camera button
+            switchButton.innerText = "Switch Camera";
+            switchButton.classList.add("btn", "scan-btn");
+            document.querySelector(".btn-container").appendChild(switchButton);
+    
+            function startScanner(cameraMode) {
+                if (scanner) {
+                    scanner.stop().then(() => {
+                        scanner.clear();
+                        initializeScanner(cameraMode);
+                    }).catch(err => console.error("Error stopping scanner:", err));
+                } else {
+                    initializeScanner(cameraMode);
+                }
+            }
+    
+            function initializeScanner(cameraMode) {
+                Html5Qrcode.getCameras().then(devices => {
+                    if (devices.length === 0) {
+                        console.error("No cameras found.");
+                        return;
+                    }
+    
+                    let selectedCamera = devices.find(device => 
+                        cameraMode === "environment" ? device.label.toLowerCase().includes("back") 
+                        : device.label.toLowerCase().includes("front")
+                    ) || devices[0]; // Fallback to any camera if not found
+    
+                    scanner = new Html5Qrcode("qr-reader");
+                    scanner.start(
+                        selectedCamera.id, 
+                        { fps: 10, qrbox: { width: 250, height: 250 } }, 
+                        onScanSuccess, 
+                        onScanError
+                    );
+                }).catch(err => console.error("Camera error:", err));
+            }
+    
             function onScanSuccess(decodedText) {
-    try {
-        const cartData = JSON.parse(decodedText);
-
-        // Get the logged-in user
-        const user = JSON.parse(localStorage.getItem("user"));
-
-        if (!user) {
-            alert("No user found! Redirecting to login...");
-            window.location.href = "/login/login.html";
-            return;
-        }
-
-        cartData.userId = user.uid; // Attach the logged-in user ID
-
-        fetch("https://revoliq.onrender.com/api/qr/scan", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(cartData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                resultElement.innerHTML = `<span class="success-message">Cart Linked Successfully ✅</span>`;
-                setTimeout(() => {
-                    window.location.href = `cart-success.html?cartId=${data.cartId}`;
-                }, 1500);
-            } else {
-                resultElement.innerHTML = `<span class="error-message">Invalid QR Code ❌</span>`;
+                console.log("Scanned QR Code:", decodedText);
+                document.getElementById("result").innerHTML = 
+                    `<span class="success-message">QR Code Scanned: ${decodedText}</span>`;
             }
-        })
-        .catch(error => {
-            console.error("Error scanning QR:", error);
-            resultElement.innerHTML = `<span class="error-message">Scan failed. Try again! ❌</span>`;
-        });
-    } catch (error) {
-        console.error("Error parsing QR code:", error);
-        resultElement.innerHTML = `<span class="error-message">Invalid QR Code format ❌</span>`;
-    }
-}
-
-
+    
             function onScanError(error) {
-                console.warn(`QR error = ${error}`);
+                console.warn("QR error:", error);
             }
-
-            startButton.addEventListener("click", function() {
-                if (typeof Html5QrcodeScanner === "undefined") {
-                    console.error("Html5QrcodeScanner is not defined.");
-                    resultElement.innerHTML = `<span class="error-message">QR scanner not available. Please try again later.</span>`;
-                    return;
-                }
-
-                if (!scanner) {
-                    scanner = new Html5QrcodeScanner("qr-reader", {
-    fps: 10,
-    qrbox: { width: 250, height: 250 },
-    aspectRatio: 1.0,
-    showTorchButtonIfSupported: true,
-    defaultCameraId: "environment" // Forces rear camera
-});
-
-                    
-                }
-
-                scanner.render(onScanSuccess, onScanError);
+    
+            startButton.addEventListener("click", function () {
+                startScanner(currentCamera);
                 startButton.disabled = true;
                 retryButton.disabled = false;
-                resultElement.innerText = "Scanning...";
             });
-
-            retryButton.addEventListener("click", function() {
-                if (scanner) {
-                    scanner.clear();
-                    scanner.render(onScanSuccess, onScanError);
-                    resultElement.innerText = "Scan a QR code to proceed";
-                }
+    
+            retryButton.addEventListener("click", function () {
+                startScanner(currentCamera);
             });
-
-            cartButton.addEventListener("click", function() {
+    
+            switchButton.addEventListener("click", function () {
+                currentCamera = (currentCamera === "environment") ? "user" : "environment";
+                startScanner(currentCamera);
+            });
+    
+            cartButton.addEventListener("click", function () {
                 window.location.href = "scanned-products.html";
             });
         });
-
-        Html5Qrcode.getCameras().then(devices => {
-        if (devices && devices.length) {
-        let backCamera = devices.find(device => device.label.toLowerCase().includes("back"));
-        let cameraId = backCamera ? backCamera.id : devices[0].id; // Default to first if no back camera
-
-        scanner = new Html5Qrcode("qr-reader");
-        scanner.start(cameraId, {
-            fps: 10,
-            qrbox: { width: 250, height: 250 }
-        }, onScanSuccess, onScanError);
-    }
-}).catch(err => console.error("Camera error:", err));
-
     </script>
+    
 </body>
 </html>
