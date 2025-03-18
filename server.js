@@ -250,47 +250,40 @@ app.get('/products/find/:barcode', async (req, res) => {
 // Scan and add to cart
 app.post('/scan', async (req, res) => {
     try {
-        const { barcode, userId } = req.body;
-
-        if (!barcode || !userId) {
-            return res.status(400).json({ message: "Missing barcode or userId" });
-        }
-
-        // Find the active cart for this user
-        let cart = await Cart.findOne({ userId, active: true });
-
-        if (!cart) {
-            return res.status(404).json({ message: "No active cart found for this user" });
-        }
-
-        // Find product details
-        let product = await AddedProduct.findOne({ barcode });
-
-        if (!product) {
+        const { barcode } = req.body;
+        
+        // Find product in Added_Pdts collection
+        const addedProduct = await AddedProduct.findOne({ barcode });
+        
+        if (!addedProduct) {
             return res.status(404).json({ message: "Product not found" });
         }
 
-        // Check if product is already in the user's cart
-        let cartProduct = cart.products.find(p => p.productId === barcode);
-
-        if (cartProduct) {
-            cartProduct.quantity += 1; // Increase quantity if already exists
+        // Check if product already exists in Products collection
+        let product = await Product.findOne({ id: barcode });
+        
+        if (product) {
+            // Update existing product quantity
+            product.quantity += 1;
         } else {
-            cart.products.push({
-                productId: barcode,
-                name: product.name,
-                price: product.price,
-                quantity: 1
+            // Create new product
+            product = new Product({
+                id: barcode,
+                name: addedProduct.name,
+                price: addedProduct.price,
+                image: addedProduct.image,
+                quantity: 1,
+                scannedAt: new Date()
             });
         }
-
-        await cart.save();
-
-        res.status(201).json({ message: "Product added to your cart!", cart });
+        
+        await product.save();
+        res.status(201).json({ message: "Product scanned and added!", product });
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
     }
 });
+
 
 
 // Fetch all products
