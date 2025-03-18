@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!user || user.userType !== "retailer") {
         alert("Unauthorized access! Redirecting to login...");
-        window.location.href = "/Revoliq/login/login.html";
+        window.location.href = "/login/login.html";
         return;
     }
 
