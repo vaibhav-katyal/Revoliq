@@ -181,8 +181,8 @@ app.post('/api/qr/scan', async (req, res) => {
         const { cartId, retailerId, userId } = req.body;
 
         // Ensure all required fields are present
-        if (!cartId || !retailerId || !userId) {
-            return res.status(400).json({ message: "Missing cartId, retailerId, or userId" });
+        if (!cartId || !retailerId ) {
+            return res.status(400).json({ message: "Missing cartId, retailerId" });
         }
 
         // Check if cart exists and is active
