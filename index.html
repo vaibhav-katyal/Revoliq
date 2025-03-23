@@ -1,63 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Revoliq SmartCart</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revoliq - Revolutionary Smart Cart Technology</title>
+    <link rel="stylesheet" href="landing.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Loader -->
+    <div class="loader">
+        <!-- <div class="loader-cart">
+            <div class="cart-body"></div>
+            <div class="cart-handle"></div>
+            <div class="cart-wheel"></div>
+            <div class="cart-wheel"></div>
+        </div> -->
+        <div class="loader-progress"></div>
+        <div class="loader-text">REVOLIQ</div>
+    </div>
+
+    <!-- Navigation -->
     <nav>
         <div class="nav-content">
             <div class="logo">
-                <h1>Revoliq</h1>
+                <i class="fas fa-shopping-cart"></i>
+                <span>Revoliq</span>
             </div>
             <div class="nav-links">
-                <a href="/" class="active">Products</a>
-                <a href="/cart.html" class="cart-link">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
-                </a>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#testimonials">Testimonials</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="auth-buttons">
+                <a href="login/login.html"><button class="btn-login" id="loginBtn">Log In</button></a>
+                <a href="login/login.html"><button class="btn-signup" id="signupBtn">Sign Up</button></a>
             </div>
         </div>
     </nav>
 
-    <main>
-        <div class="hero">
-            <h1>Welcome to Revoliq SmartCart</h1>
-            <p>Discover our premium collection of smart devices</p>
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <h1>The Future of <span class="accent">Shopping</span> is Here</h1>
+            <p>Revoliq SmartCart revolutionizes the retail experience with cutting-edge technology that eliminates checkout lines and transforms the way you shop.</p>
+            <a href="login/login.html" style="text-decoration: none;"><button class="cta-button">
+                <i class="fas fa-rocket"></i>
+                Get Started
+            </button></a>
         </div>
-        
-        <div class="products-container" id="productsContainer"></div>
-    </main>
-
-    <!-- Product Modal -->
-    <div id="productModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="modalContent"></div>
+        <div class="hero-3d-cart">
+            <div class="cart-3d">
+                <div class="cart-3d-face front"><i class="fas fa-shopping-cart"></i></div>
+                <div class="cart-3d-face back"><i class="fas fa-barcode"></i></div>
+                <div class="cart-3d-face right"><i class="fas fa-credit-card"></i></div>
+                <div class="cart-3d-face left"><i class="fas fa-weight"></i></div>
+                <div class="cart-3d-face top"><i class="fas fa-wifi"></i></div>
+                <div class="cart-3d-face bottom"><i class="fas fa-shield-alt"></i></div>
+            </div>
         </div>
-    </div>
+    </section>
 
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Smart Features</h2>
+            <p>Discover how Revoliq's SmartCart technology transforms the shopping experience with its innovative features.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-barcode"></i>
+                <h3>Built-in Barcode Scanner</h3>
+                <p>Scan items directly in your cart with our high-precision scanner that automatically adds products to your virtual basket.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-weight"></i>
+                <h3>Weight Verification System</h3>
+                <p>Our smart weight system ensures security by matching scanned items with their expected weight, preventing errors and theft.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-credit-card"></i>
+                <h3>Integrated Payment</h3>
+                <p>Complete your shopping experience by paying directly at the cart using our secure payment terminal with multiple options.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Indoor Navigation</h3>
+                <p>Find products easily with our smart navigation system that guides you through the store to your desired items.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-percent"></i>
+                <h3>Real-time Promotions</h3>
+                <p>Get personalized deals and discounts displayed on our built-in screen as you shop through different departments.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Secure Shopping</h3>
+                <p>Our multi-layer security systems protect your payment data and ensure a trusted shopping experience every time.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-header">
+            <h2>How It Works</h2>
+            <p>Experience the simplicity of shopping with Revoliq's SmartCart technology in just three easy steps.</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Grab Your SmartCart</h3>
+                <p>Simply unlock a SmartCart with your app or loyalty card and start your shopping journey.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Shop & Scan</h3>
+                <p>Add items to your cart and scan them with the built-in scanner. The weight system verifies each item automatically.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Pay & Go</h3>
+                <p>Complete your payment directly at the cart and exit the store—no lines, no waiting!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" id="testimonials">
+        <div class="section-header">
+            <h2>Customer Experiences</h2>
+            <p>Hear what our customers and retail partners have to say about the Revoliq SmartCart revolution.</p>
+        </div>
+        <div class="testimonials-slider">
+            <div class="testimonials-slides">
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>Revoliq has completely transformed how our customers shop. Queue times have decreased by 70%, and customer satisfaction has skyrocketed. It's been a game-changer for our retail chain.</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-author-img">JD</div>
+                        <div class="testimonial-author-info">
+                            <h4>John Davis</h4>
+                            <p>Retail Operations Director, MegaMart</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>As someone who hates waiting in line, Revoliq SmartCarts have made shopping enjoyable again. I can scan, pay, and leave without ever standing in a checkout line. It's shopping from the future!</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-author-img">SM</div>
+                        <div class="testimonial-author-info">
+                            <h4>Sarah Miller</h4>
+                            <p>Regular Shopper</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>Implementing Revoliq in our stores has increased our throughput by 35% during peak hours and significantly reduced operational costs. The ROI has exceeded our expectations within just six months.</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-author-img">RK</div>
+                        <div class="testimonial-author-info">
+                            <h4>Robert Kim</h4>
+                            <p>CEO, ShopSmart Grocery Chain</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-controls">
+                <div class="slider-dot active" data-slide="0"></div>
+                <div class="slider-dot" data-slide="1"></div>
+                <div class="slider-dot" data-slide="2"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="contact">
+        <div class="cta-content">
+            <h2>Ready to Transform Your Shopping Experience?</h2>
+            <p>Join the retail revolution with Revoliq SmartCart technology and say goodbye to checkout lines forever.</p>
+            <button class="cta-button" id="ctaBtn">
+                <i class="fas fa-paper-plane"></i>
+                Contact Us Today
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer>
         <div class="footer-content">
-            <div class="footer-logo">
-                <h2>Revoliq</h2>
-                <p>Smart Shopping, Smarter Living</p>
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Revoliq</span>
+                </div>
+                <p>Revolutionizing retail with smart cart technology that eliminates checkout lines and enhances the shopping experience.</p>
             </div>
-            <div class="footer-links">
-                <h3>Quick Links</h3>
-                <a href="/">Home</a>
-                <a href="/cart.html">Cart</a>
+            <div class="footer-col">
+                <h3>Company</h3>
+                <div class="footer-links">
+                    <a href="#">About Us</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Our Team</a>
+                    <a href="#">Press</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Resources</h3>
+                <div class="footer-links">
+                    <a href="#">Blog</a>
+                    <a href="#">Case Studies</a>
+                    <a href="#">Documentation</a>
+                    <a href="#">Support</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Contact</h3>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-envelope"></i> connect.revoliq@gmail.com</a>
+                    <a href="#"><i class="fas fa-phone"></i> +91 77430-62799</a>
+                    <a href="#"><i class="fas fa-map-marker-alt"></i> 123 Tech Park, Innovation Drive</a>
+                </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2025 Revoliq. All rights reserved.</p>
+            <div class="copyright">© 2025 Revoliq. All rights reserved.</div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/revoliq/"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
         </div>
     </footer>
 
-    <script type="module" src="main.js"></script>
+    <!-- Login Modal -->
+    <!-- <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeLoginModal">&times;</button>
+            <h3>Log In to Revoliq</h3>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="form-submit">Log In</button>
+                <div class="form-footer">
+                    Don't have an account? <a href="#" id="switchToSignup">Sign Up</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    Signup Modal
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeSignupModal">&times;</button>
+            <h3>Sign Up for Revoliq</h3>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPasswordConfirm">Confirm Password</label>
+                    <input type="password" id="signupPasswordConfirm" required>
+                </div>
+                <button type="submit" class="form-submit">Sign Up</button>
+                <div class="form-footer">
+                    Already have an account? <a href="#" id="switchToLogin">Log In</a>
+                </div>
+            </form>
+        </div>
+    </div> -->
+
+    <script src="landing.js"></script>
 </body>
 </html>
