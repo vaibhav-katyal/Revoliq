@@ -280,8 +280,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Redirect based on user type
       window.location.href = userData.user.userType === "retailer" 
-          ? "/ret_dash.html" 
-          : "/customer-profile.html";
+          ? "/Revoliq/ret_dash.html" 
+          : "/Revoliq/customer-profile.html";
           
   } catch (error) {
       console.error("Sign-in error:", error.message);
@@ -335,7 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         alert("Login Successful!")
         // Redirect based on user type
-        window.location.href = userType === "retailer" ? "ret_dash.html" : "customer-profile.html"
+        window.location.href = userType === "retailer" ? "/Revoliq/ret_dash.html" : "customer-profile.html"
       } catch (error) {
         console.error("Error during sign in:", error.code, error.message)
         alert(`Login failed: ${error.message}`)
