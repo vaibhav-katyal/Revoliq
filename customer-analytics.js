@@ -380,7 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!user) {
         alert("No user found! Redirecting to login...");
-        window.location.href = "/Revoliq/login.html";
+        window.location.href = "/Revoliq/login/login.html";
         return;
     }
 

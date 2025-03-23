@@ -276,19 +276,12 @@ document.addEventListener("DOMContentLoaded", () => {
       // Store user data in localStorage
       localStorage.setItem("user", JSON.stringify(userData.user));
 
-      const successMessage = document.createElement("div");
-      successMessage.textContent = "✅ Login Successful! Redirecting...";
-      successMessage.style.color = "green";
-      successMessage.style.fontSize = "16px";
-      successMessage.style.marginTop = "10px";
-      signInForm.appendChild(successMessage);
-      
-      setTimeout(() => {
-          window.location.href = userData.user.userType === "retailer" 
-              ? "ret_dash.html" 
-              : "customer-profile.html";
-      }, 2000); // Redirect after 2 seconds
-      
+      alert("Login Successful!");
+
+      // Redirect based on user type
+      window.location.href = userData.user.userType === "retailer" 
+          ? "/ret_dash.html" 
+          : "/customer-profile.html";
           
   } catch (error) {
       console.error("Sign-in error:", error.message);
