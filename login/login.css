@@ -259,6 +259,10 @@ input[type="checkbox"] {
 }
 
 .primary-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   padding: 12px;
   border: none;
@@ -277,6 +281,19 @@ input[type="checkbox"] {
 
 .primary-button:active {
   transform: scale(0.98);
+}
+
+.primary-button .button-text {
+  display: inline-block;
+}
+
+.primary-button .button-loader {
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 4px solid white;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
 }
 
 /* Overlay Styles */
@@ -542,4 +559,24 @@ input[type="checkbox"] {
   .container {
     padding: 10px;
   }
+}
+
+/* Loader Styles */
+.loader {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid var(--primary-color);
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  z-index: 1000;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

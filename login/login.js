@@ -22,6 +22,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const signInUserTypeInput = document.getElementById("signInUserType")
   const retailerFields = document.getElementById("retailerFields")
   const forgotPasswordLink = document.querySelector(".forgot-password")
+  const loader = document.getElementById("loader");
+
+  // Show loader
+  function showLoader() {
+    loader.style.display = "block";
+  }
+
+  // Hide loader
+  function hideLoader() {
+    loader.style.display = "none";
+  }
+
+  // Show loader inside button
+  function showButtonLoader(button) {
+    const buttonText = button.querySelector(".button-text");
+    const buttonLoader = button.querySelector(".button-loader");
+    if (buttonText) buttonText.style.display = "none";
+    if (buttonLoader) buttonLoader.style.display = "block";
+  }
+
+  // Hide loader inside button
+  function hideButtonLoader(button) {
+    const buttonText = button.querySelector(".button-text");
+    const buttonLoader = button.querySelector(".button-loader");
+    if (buttonText) buttonText.style.display = "inline-block";
+    if (buttonLoader) buttonLoader.style.display = "none";
+  }
 
   // Panel toggle
   signUpButton.addEventListener("click", () => {
@@ -102,9 +129,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // 🚀 Sign-Up Function
   signUpForm.addEventListener("submit", async (event) => {
     event.preventDefault()
+    const submitButton = signUpForm.querySelector('button[type="submit"]');
+    showButtonLoader(submitButton);
 
     // Disable the submit button to prevent multiple submissions
-    const submitButton = signUpForm.querySelector('button[type="submit"]')
     if (submitButton) submitButton.disabled = true
 
     let isValid = true
@@ -231,6 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Error during sign up:", error.code, error.message)
         alert(`Sign up failed: ${error.message}`)
       } finally {
+        hideButtonLoader(submitButton);
         // Re-enable the submit button
         if (submitButton) submitButton.disabled = false
       }
@@ -243,9 +272,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // 🚀 Login Function
   signInForm.addEventListener("submit", async (event) => {
     event.preventDefault()
+    const submitButton = signInForm.querySelector('button[type="submit"]');
+    showButtonLoader(submitButton);
 
     // Disable the submit button to prevent multiple submissions
-    const submitButton = signInForm.querySelector('button[type="submit"]')
     if (submitButton) submitButton.disabled = true
 
     let isValid = true
@@ -340,6 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Error during sign in:", error.code, error.message)
         alert(`Login failed: ${error.message}`)
       } finally {
+        hideButtonLoader(submitButton);
         // Re-enable the submit button
         if (submitButton) submitButton.disabled = false
       }
